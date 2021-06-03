@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.arsha.api.cache.CacheManager;
+import io.arsha.api.cache.UtilComposite;
 import io.arsha.api.util.Util;
 import io.arsha.api.util.mongodb.Mongo;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -44,7 +46,7 @@ public class Scraper {
         ctx.fail(401);
       } else {
         if (ctx.request().getHeader("c") != null) {
-          CacheManager.getDBCache().clear();
+          CacheManager.getFullDBCache().clear();
           System.gc();
           ctx.response().end();
         } else {
@@ -55,7 +57,10 @@ public class Scraper {
           CompositeFuture.all(collections).onSuccess(cf -> {
             List<Future> caches = new ArrayList<>();
             for (Future<List<String>> db : collections) {
-              db.result().forEach(result -> caches.add(Mongo.getItemDB(result)));           
+              db.result().forEach(result -> {
+                UtilComposite query = new UtilComposite(result, new JsonObject());
+                CacheManager.getFullDBCache().get(query);
+              });           
             }
 
             CompositeFuture.all(caches)
