@@ -54,7 +54,8 @@ public class CacheManager {
             String region = entry.getKey();
 
             v1Cache.put(region.toLowerCase(), new Cache2kBuilder<V1Composite, Future<Buffer>>() {
-            }.name(region.toUpperCase() + "_V1").expireAfterWrite(expire, TimeUnit.MINUTES).entryCapacity(40000)
+            }.name(region.toUpperCase() + "_V1").expireAfterWrite(expire, TimeUnit.MINUTES)
+                .refreshAhead(true).entryCapacity(40000)
                 .loader(new CacheLoader<V1Composite, Future<Buffer>>() {
                     @Override
                     public Future<Buffer> load(V1Composite key) {
@@ -73,7 +74,8 @@ public class CacheManager {
             String region = entry.getKey();
 
             v2Cache.put(region.toLowerCase(), new Cache2kBuilder<V2Composite, Future<Buffer>>() {
-            }.name(region.toUpperCase() + "_V2").expireAfterWrite(expire, TimeUnit.MINUTES).entryCapacity(40000)
+            }.name(region.toUpperCase() + "_V2").expireAfterWrite(expire, TimeUnit.MINUTES)
+                .refreshAhead(true).entryCapacity(40000)
                 .loader(new CacheLoader<V2Composite, Future<Buffer>>() {
                     @Override
                     public Future<Buffer> load(V2Composite key) {
@@ -109,7 +111,8 @@ public class CacheManager {
     public static Future<Void> createDBCache(Integer expire) {
         return Future.future(cache -> {
             itemDBCache = new Cache2kBuilder<UtilComposite, Future<JsonObject>>() {
-            }.name("ITEM_DB").expireAfterWrite(expire, TimeUnit.MINUTES).entryCapacity(40000)
+            }.name("ITEM_DB").expireAfterWrite(expire, TimeUnit.MINUTES)
+                .refreshAhead(true).entryCapacity(40000)
                 .loader(new CacheLoader<UtilComposite, Future<JsonObject>>() {
                     @Override
                     public Future<JsonObject> load(UtilComposite key) {
