@@ -14,4 +14,4 @@ Run `./build_run.sh`
 
 === Running from artifact
 
-Download most recent https://git.arsha.io/arsha/api.arsha.io/-/jobs[artifact], extract archive and run `./run.sh`
+Download most recent https://git.arsha.io/arsha/api.arsha.io/-/jobs[artifact], extract archive and run `java -jar ./api.jar`

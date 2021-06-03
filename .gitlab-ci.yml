@@ -10,9 +10,8 @@ build:
   only:
     - master
   artifacts:
+    expire_in: 1d
     paths:
       - api.jar
       - conf/
       - api/
-
-  
