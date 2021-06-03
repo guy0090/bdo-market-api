@@ -1,0 +1,5 @@
+{
+	"user": "USER",
+	"pw": "PASSWORD",
+	"connection": "mongodb+srv://%s:%s@cluster/"
+}

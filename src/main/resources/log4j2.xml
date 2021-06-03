@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+ 
+    <!-- Logging Properties -->
+    <Properties>
+        <Property name="LOG_PATTERN">[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%c{1}] - %msg%n</Property>
+        <Property name="APP_LOG_ROOT">logs/</Property>
+    </Properties>
+     
+    <Appenders>
+     
+        <!-- Console Appender -->
+        <Console name="Console" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${LOG_PATTERN}" disableAnsi="false"/>
+        </Console>
+         
+        <!-- File Appenders on need basis -->
+        <RollingFile name="requestErrors" fileName="${APP_LOG_ROOT}/request_errors.log"
+            filePattern="${APP_LOG_ROOT}/request_errors-%d{yyyy-MM-dd}-%i.log">
+            <LevelRangeFilter minLevel="FATAL" maxLevel="TRACE" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${LOG_PATTERN}" disableAnsi="false"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+            <DefaultRolloverStrategy max="1"/>
+        </RollingFile>
+         
+        <RollingFile name="appLog" fileName="${APP_LOG_ROOT}/vertx.log"
+            filePattern="${APP_LOG_ROOT}/vertx-%d{yyyy-MM-dd}-%i.log" >
+            <LevelRangeFilter minLevel="FATAL" maxLevel="TRACE" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${LOG_PATTERN}" disableAnsi="false"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+            <DefaultRolloverStrategy max="1"/>
+        </RollingFile>
+         
+    </Appenders>
+ 
+    <Loggers>
+        <Logger name="io.arsha.api.util" additivity="false" level="debug">
+            <AppenderRef ref="requestErrors" />
+        </Logger> 
+
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="appLog" />
+        </Root>
+ 
+    </Loggers>
+ 
+</Configuration>

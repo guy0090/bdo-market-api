@@ -1,0 +1,18 @@
+image: maven:3.8.1-jdk-11
+
+stages:
+  - build
+
+build:
+  stage: build
+  script:
+    - 'mvn clean install && mv target/api.jar ./'
+  only:
+    - master
+  artifacts:
+    paths:
+      - api.jar
+      - conf/
+      - api/
+
+  
