@@ -1,6 +1,6 @@
 == https://api.arsha.io[BDO Market API] image:https://img.shields.io/badge/vert.x-4.0.3-purple.svg[link="https://vertx.io"]
 
-Compiled with `https://openjdk.java.net/projects/jdk/15/[JDK 11]` and `https://maven.apache.org/[maven 3.8.1]` +
+Compiled with `https://openjdk.java.net/projects/jdk/15/[JDK 15]` and `https://maven.apache.org/[maven 3.8.1]` +
 Older versions should also work, but line `162` in `pom.xml` must be changed accordingly
 
 === Config setup
