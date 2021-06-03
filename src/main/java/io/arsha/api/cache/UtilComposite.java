@@ -2,14 +2,14 @@ package io.arsha.api.cache;
 
 import io.vertx.core.json.JsonObject;
 
-public final class UtilKey {
+public final class UtilComposite {
     /**
      * Composite key for utility cache
      * 
      * @param collection the collection to search
-     * @param query      the query to run 
+     * @param query      the <code>JsonObject</code> query to run 
      */
-    public UtilKey(final String collection, final JsonObject query) {
+    public UtilComposite(final String collection, final JsonObject query) {
         this.collection = collection;
         this.query = query;
     }
@@ -29,7 +29,7 @@ public final class UtilKey {
     public boolean equals(final Object other) {
         if (this == other) return true;
         if (other == null || getClass() != other.getClass()) return false;
-        UtilKey key = (UtilKey) other;
+        UtilComposite key = (UtilComposite) other;
         if (!collection.equals(key.collection)) return false;
         if (!query.equals(key.query)) return false;
 

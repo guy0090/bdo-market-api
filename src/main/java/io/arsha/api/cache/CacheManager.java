@@ -20,10 +20,10 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
 public class CacheManager {
-    private static Map<String, Cache<V1Key, Future<Buffer>>> v1Cache = new HashMap<>();
-    private static Map<String, Cache<V2Key, Future<Buffer>>> v2Cache = new HashMap<>();
-    private static Cache<UtilKey, Future<JsonObject>> itemDBCache = null;
-    private static Cache<UtilKey, Future<List<JsonObject>>> fullDBCache = null;
+    private static Map<String, Cache<V1Composite, Future<Buffer>>> v1Cache = new HashMap<>();
+    private static Map<String, Cache<V2Composite, Future<Buffer>>> v2Cache = new HashMap<>();
+    private static Cache<UtilComposite, Future<JsonObject>> itemDBCache = null;
+    private static Cache<UtilComposite, Future<List<JsonObject>>> fullDBCache = null;
     private static JsonObject config = new JsonObject();
 
     /**
@@ -53,11 +53,11 @@ public class CacheManager {
             regions.forEach(entry -> {
             String region = entry.getKey();
 
-            v1Cache.put(region.toLowerCase(), new Cache2kBuilder<V1Key, Future<Buffer>>() {
+            v1Cache.put(region.toLowerCase(), new Cache2kBuilder<V1Composite, Future<Buffer>>() {
             }.name(region.toUpperCase() + "_V1").expireAfterWrite(expire, TimeUnit.MINUTES).entryCapacity(40000)
-                .loader(new CacheLoader<V1Key, Future<Buffer>>() {
+                .loader(new CacheLoader<V1Composite, Future<Buffer>>() {
                     @Override
-                    public Future<Buffer> load(V1Key key) {
+                    public Future<Buffer> load(V1Composite key) {
                         return Marketplace.request(key);
                     }
                 }).build());
@@ -72,11 +72,11 @@ public class CacheManager {
             regions.forEach(entry -> {
             String region = entry.getKey();
 
-            v2Cache.put(region.toLowerCase(), new Cache2kBuilder<V2Key, Future<Buffer>>() {
+            v2Cache.put(region.toLowerCase(), new Cache2kBuilder<V2Composite, Future<Buffer>>() {
             }.name(region.toUpperCase() + "_V2").expireAfterWrite(expire, TimeUnit.MINUTES).entryCapacity(40000)
-                .loader(new CacheLoader<V2Key, Future<Buffer>>() {
+                .loader(new CacheLoader<V2Composite, Future<Buffer>>() {
                     @Override
-                    public Future<Buffer> load(V2Key key) {
+                    public Future<Buffer> load(V2Composite key) {
                         Future<Buffer> cached = Future.future(null);
                         switch (key.getRequestId()) {
                             case GetWorldMarketHotList:
@@ -108,11 +108,11 @@ public class CacheManager {
 
     public static Future<Void> createDBCache(Integer expire) {
         return Future.future(cache -> {
-            itemDBCache = new Cache2kBuilder<UtilKey, Future<JsonObject>>() {
+            itemDBCache = new Cache2kBuilder<UtilComposite, Future<JsonObject>>() {
             }.name("ITEM_DB").expireAfterWrite(expire, TimeUnit.MINUTES).entryCapacity(40000)
-                .loader(new CacheLoader<UtilKey, Future<JsonObject>>() {
+                .loader(new CacheLoader<UtilComposite, Future<JsonObject>>() {
                     @Override
-                    public Future<JsonObject> load(UtilKey key) {
+                    public Future<JsonObject> load(UtilComposite key) {
                         if (key.getCollection().contains("recipe")) return Mongo.getRecipe(key.getCollection(), key.getQuery());
                         else return Mongo.getItem(key.getCollection(), key.getQuery());
                     }
@@ -123,11 +123,11 @@ public class CacheManager {
 
     public static Future<Void> createFullDBCache(Integer expire) {
         return Future.future(cache -> {
-            fullDBCache = new Cache2kBuilder<UtilKey, Future<List<JsonObject>>>() {
+            fullDBCache = new Cache2kBuilder<UtilComposite, Future<List<JsonObject>>>() {
             }.name("FULL_ITEM_DB").expireAfterWrite(expire, TimeUnit.MINUTES).entryCapacity(20)
-                .loader(new CacheLoader<UtilKey, Future<List<JsonObject>>>() {
+                .loader(new CacheLoader<UtilComposite, Future<List<JsonObject>>>() {
                     @Override
-                    public Future<List<JsonObject>> load(UtilKey key) {
+                    public Future<List<JsonObject>> load(UtilComposite key) {
                         if (key.getCollection().contains("recipe")) return Mongo.getRecipeClient().find(key.getCollection(), key.getQuery());
                         else return Mongo.getItemClient().find(key.getCollection(), key.getQuery());
                     }
@@ -136,22 +136,22 @@ public class CacheManager {
         });
     }
 
-    public static Cache<V1Key, Future<Buffer>> getV1Cache(String region) {
+    public static Cache<V1Composite, Future<Buffer>> getV1Cache(String region) {
         if (v1Cache.isEmpty()) createV1Cache(config.getInteger("v1Expiry"));
         return v1Cache.get(region.toLowerCase());
     }
 
-    public static Cache<V2Key, Future<Buffer>> getV2Cache(String region) {
+    public static Cache<V2Composite, Future<Buffer>> getV2Cache(String region) {
         if (v2Cache.isEmpty()) createV2Cache(config.getInteger("v2Expiry"));
         return v2Cache.get(region.toLowerCase());
     }
 
-    public static Cache<UtilKey, Future<JsonObject>> getDBCache() {
+    public static Cache<UtilComposite, Future<JsonObject>> getDBCache() {
         if (itemDBCache == null) createDBCache(config.getInteger("dbExpiry"));
         return itemDBCache;
     }
 
-    public static Cache<UtilKey, Future<List<JsonObject>>> getFullDBCache() {
+    public static Cache<UtilComposite, Future<List<JsonObject>>> getFullDBCache() {
         if (fullDBCache == null) createFullDBCache(config.getInteger("fullDBExpiry"));
         return fullDBCache;
     }

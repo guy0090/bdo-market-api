@@ -2,7 +2,7 @@ package io.arsha.api.cache;
 
 import io.arsha.api.market.enums.MarketEndpoint;
 
-public final class V1Key {
+public class V1Composite {
     /**
      * the composite key for V1 requests
      * 
@@ -11,7 +11,7 @@ public final class V1Key {
      * @param region    the game region
      * @param requestId the request endpoint
      */
-    public V1Key(final String id, final String sid, final String region, final MarketEndpoint requestId) {
+    public V1Composite(final String id, final String sid, final String region, final MarketEndpoint requestId) {
         this.id = id;
         this.sid = sid;
         this.region = region.toLowerCase();
@@ -43,7 +43,7 @@ public final class V1Key {
     public boolean equals(final Object other) {
         if (this == other) return true;
         if (other == null || getClass() != other.getClass()) return false;
-        V1Key key = (V1Key) other;
+        V1Composite key = (V1Composite) other;
         if (!id.equals(key.id)) return false;
         if (!sid.equals(key.sid)) return false;
         if (!region.equals(key.region)) return false;

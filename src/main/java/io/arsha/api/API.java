@@ -32,7 +32,7 @@ import io.vertx.micrometer.VertxPrometheusOptions;
 
 public class API extends AbstractVerticle {
 	private static Logger logger = LoggerFactory.getLogger(API.class);
-	public static AppConfig config = new AppConfig();
+	public static AppConfig config = null;
 
 	public static void main(String[] args) {
 		try {
@@ -45,8 +45,6 @@ public class API extends AbstractVerticle {
 			logger.error("Exiting: error reading a config: " + io.getMessage());
 			return;
 		}
-
-
 
 		JsonObject metrics = config.getMetrics();
 		Boolean useMetrics = config.getDebug() ?  false : metrics.getBoolean("use");

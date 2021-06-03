@@ -6,7 +6,7 @@ stages:
 build:
   stage: build
   script:
-    - 'mvn clean install && mv target/api.jar ./'
+    - 'mvn clean install'
   only:
     - master
   artifacts:

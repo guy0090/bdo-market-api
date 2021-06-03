@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.arsha.api.cache.CacheManager;
-import io.arsha.api.cache.UtilKey;
+import io.arsha.api.cache.UtilComposite;
 import io.arsha.api.util.Util;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
@@ -73,25 +73,34 @@ public class Utility {
         getFullDB(ctx, "_mrecipes_matgroups");
     }
 
+    /**
+     * Get a single or multiple elements from a MongoDB collection
+     * and send result as <code>RoutingContext</code> response 
+     * 
+     * @param ctx        the <code>RoutingContext</code>
+     * @param collection the name of the collection without language prefix to get elements from
+     *                   This value will be concatenated with the language supplied in <code>ctx</code>
+     *                   parameters
+     */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static void getDBElement(RoutingContext ctx, String localeKey) {
+    private static void getDBElement(RoutingContext ctx, String collection) {
         ctx.response().putHeader("Access-Control-Allow-Origin", "*");
         ctx.response().putHeader("Content-Type", "application/json");
 
         MultiMap params = ctx.request().params();
         List<String> ids = params.getAll("id");
-        String lang = ctx.request().getParam("lang") == null ? "" : ctx.request().getParam("lang");
-        if (!lang.equals("") && !Util.getLangs().contains(lang)) {
+        String lang = params.get("lang");
+        if (lang != null && !Util.getLangs().contains(lang)) {
             ctx.fail(456);
             return;
         }
 
-        if (lang.equals("")) lang = "en"+localeKey;
-        else lang = lang+localeKey;
+        if (lang == null) lang = "en" + collection;
+        else lang += collection;
 
         List<Future> db = new ArrayList<>();
         for (String id : ids) {
-            UtilKey util = new UtilKey(lang, new JsonObject().put("id", Integer.valueOf(id)));
+            UtilComposite util = new UtilComposite(lang, new JsonObject().put("id", Integer.valueOf(id)));
             db.add(CacheManager.getDBCache().get(util));
         }
 
@@ -115,22 +124,33 @@ public class Utility {
         }).onFailure(fail -> ctx.fail(513));
     }
 
+    /**
+     * Get an entire collection from MongoDB - if no language parameter is found
+     * all collections of that type (item or recipe) are returned 
+     * <p>
+     * The result is sent as <code>RoutingContext</code> response 
+     * 
+     * @param ctx        the <code>RoutingContext</code>
+     * @param collection the name of the collection (without language prefix) to get elements from
+     *                   This value will be concatenated with the language supplied in <code>ctx</code>
+     *                   parameters
+     */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static void getFullDB(RoutingContext ctx, String localeKey) {
+    private static void getFullDB(RoutingContext ctx, String collection) {
         ctx.response().putHeader("Access-Control-Allow-Origin", "*");
         ctx.response().putHeader("Content-Type", "application/json");
-        String lang = ctx.request().getParam("lang") == null ? "" : ctx.request().getParam("lang");
-        if (!lang.equals("") && !Util.getLangs().contains(lang)) {
+        String lang = ctx.request().getParam("lang");
+        if (lang != null && !Util.getLangs().contains(lang)) {
             ctx.fail(456);
             return;
         }
 
-        if (lang.equals("")) {
+        if (lang == null) {
             List<String> langs = Util.getLangs();
             Map<String, Future> dbs = new HashMap<>();
             langs.forEach(l -> {
-                UtilKey key = new UtilKey(l+localeKey, new JsonObject());
-                dbs.put(l+localeKey, CacheManager.getFullDBCache().get(key));
+                UtilComposite key = new UtilComposite(l + collection, new JsonObject());
+                dbs.put(l + collection, CacheManager.getFullDBCache().get(key));
             });
 
             CompositeFuture.all(new ArrayList(dbs.values())).onSuccess(cf -> {
@@ -147,7 +167,7 @@ public class Utility {
                 ctx.response().end(all.encode());
             });
         } else {
-            UtilKey key = new UtilKey(lang+localeKey, new JsonObject());
+            UtilComposite key = new UtilComposite(lang+collection, new JsonObject());
             Future<List<JsonObject>> itemDB = CacheManager.getFullDBCache().get(key);
             itemDB.onSuccess(future -> {
                 List<JsonObject> localeDB = future;

@@ -1,12 +1,12 @@
 == https://api.arsha.io[BDO Market API] image:https://img.shields.io/badge/vert.x-4.0.3-purple.svg[link="https://vertx.io"]
 
 Compiled with `https://openjdk.java.net/projects/jdk/15/[JDK 15]` and `https://maven.apache.org/[maven 3.8.1]` +
-Older versions should also work, but line `162` in `pom.xml` must be changed accordingly
+Older versions should also work, but the release configuration in `https://git.arsha.io/arsha/api.arsha.io/-/blob/master/pom.xml[pom.xml]` must be changed accordingly
 
 === Config setup
 
 * Create `conf/mongo.json` example: `conf/mongo.default.json`  
-* Create `api/key.txt` example: `api/key.default.txt`   
+* Create `api/key.txt` example: `api/key.default.txt` (empty by default and will produce an error if left empty)
 
 === Building and running from source
 

@@ -3,9 +3,6 @@ package io.arsha.api.common;
 import io.vertx.core.json.JsonObject;
 
 public class AppConfig {
-    public AppConfig() {
-    }
-
     public AppConfig(String json) {
         JsonObject config = new JsonObject(json);
 

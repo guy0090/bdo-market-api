@@ -7,8 +7,8 @@ import java.util.Optional;
 import org.cache2k.Cache;
 
 import io.arsha.api.cache.CacheManager;
-import io.arsha.api.cache.V1Key;
-import io.arsha.api.cache.V2Key;
+import io.arsha.api.cache.V1Composite;
+import io.arsha.api.cache.V2Composite;
 import io.arsha.api.market.enums.MarketEndpoint;
 import io.arsha.api.util.Util;
 import io.vertx.core.CompositeFuture;
@@ -47,8 +47,8 @@ public class V1 {
         Util.validateRegion(ctx, region);
         if (ctx.failed()) return;
 
-        Cache<V1Key, Future<Buffer>> cache = CacheManager.getV1Cache(region);
-        Future<Buffer> cacheResponse = cache.get(new V1Key("x", "x", region, MarketEndpoint.GetWorldMarketHotList));
+        Cache<V1Composite, Future<Buffer>> cache = CacheManager.getV1Cache(region);
+        Future<Buffer> cacheResponse = cache.get(new V1Composite("x", "x", region, MarketEndpoint.GetWorldMarketHotList));
         cacheResponse.onSuccess(hotList -> {
             try {
                 ctx.response().end(hotList.toJsonObject().encodePrettily());
@@ -71,10 +71,10 @@ public class V1 {
         MultiMap params = ctx.request().params();
         String mainCategory = params.get("mainCategory");
         String subCategory = params.get("subCategory") == null ? "0" : params.get("subCategory");
-        Cache<V1Key, Future<Buffer>> cache = CacheManager.getV1Cache(region);
+        Cache<V1Composite, Future<Buffer>> cache = CacheManager.getV1Cache(region);
 
-        V1Key requestString = new V1Key(mainCategory, subCategory, region, MarketEndpoint.GetWorldMarketList);
-        Future<Buffer> cacheResponse = cache.get(requestString);
+        V1Composite request = new V1Composite(mainCategory, subCategory, region, MarketEndpoint.GetWorldMarketList);
+        Future<Buffer> cacheResponse = cache.get(request);
         cacheResponse.onSuccess(marketList -> {
             try {
                 ctx.response().end(marketList.toJsonObject().encodePrettily());
@@ -96,12 +96,12 @@ public class V1 {
         Util.validateRegion(ctx, region);
         if (ctx.failed()) return;
 
-        Cache<V1Key, Future<Buffer>> cache = CacheManager.getV1Cache(region);
+        Cache<V1Composite, Future<Buffer>> cache = CacheManager.getV1Cache(region);
         List<String> ids = ctx.request().params().getAll("id");
         List<Future> buffers = new ArrayList<>();
         ids.forEach(id -> {
-            V1Key requestString =  new V1Key(id, "0", region, MarketEndpoint.GetWorldMarketSubList); // String.format("%s:%s:%s:%s", id, 0, region, 2);
-            Future cacheResponse = cache.get(requestString);
+            V1Composite request =  new V1Composite(id, "0", region, MarketEndpoint.GetWorldMarketSubList);
+            Future cacheResponse = cache.get(request);
             buffers.add(cacheResponse);
         });
 
@@ -124,10 +124,10 @@ public class V1 {
 
         MultiMap params = ctx.request().params();
         String ids = params.get("ids");
-        Cache<V1Key, Future<Buffer>> cache = CacheManager.getV1Cache(region);
+        Cache<V1Composite, Future<Buffer>> cache = CacheManager.getV1Cache(region);
 
-        V1Key requestString = new V1Key(ids, "x", region, MarketEndpoint.GetWorldMarketSearchList);// String.format("%s:%s:3", ids, region);
-        Future<Buffer> cacheResponse = cache.get(requestString);
+        V1Composite request = new V1Composite(ids, "x", region, MarketEndpoint.GetWorldMarketSearchList);
+        Future<Buffer> cacheResponse = cache.get(request);
         cacheResponse.onSuccess(search -> {
             try {
                 ctx.response().end(search.toJsonObject().encodePrettily());
@@ -154,15 +154,15 @@ public class V1 {
             return;
         }
 
-        Cache<V1Key, Future<Buffer>> cache = CacheManager.getV1Cache(region);
+        Cache<V1Composite, Future<Buffer>> cache = CacheManager.getV1Cache(region);
         List<Future> futures = new ArrayList<>();
 
         for (int i = 0; i < ids.size(); i++) {
             String id = ids.get(i);
             String sid = (sids.isEmpty() ? "0" : sids.get(i));
 
-            V1Key requestString = new V1Key(id, sid, region, requestId); //String.format("%s:%s:%s:%s", id, sid, region, requestID);
-            futures.add(cache.get(requestString));
+            V1Composite request = new V1Composite(id, sid, region, requestId);
+            futures.add(cache.get(request));
         }
 
         CompositeFuture.all(futures).onSuccess(ar -> {
@@ -190,7 +190,7 @@ public class V1 {
         Util.validateLang(ctx, lang);
         if (ctx.failed()) return;
 
-        V2Key request = new V2Key(id, sid, region, MarketEndpoint.GetWorldMarketSubList, lang);
+        V2Composite request = new V2Composite(id, sid, region, MarketEndpoint.GetWorldMarketSubList, lang);
         Future<Buffer> sublistItem = CacheManager.getV2Cache(region).get(request);
         sublistItem.onSuccess(res -> {
             JsonArray result = res.toJsonArray();

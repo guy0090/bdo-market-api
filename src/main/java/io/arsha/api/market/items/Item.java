@@ -24,7 +24,7 @@ public class Item {
         this.icon = null;
     }
 
-    private Object name;
+    private String name;
     private int id;
     private int sid;
     private String minEnhance;
@@ -38,11 +38,11 @@ public class Item {
     private Long lastSoldTime;
     private String icon;
 
-    public Object getName() {
+    public String getName() {
         return this.name;
     }
 
-    public void setName(Object name) {
+    public void setName(String name) {
         this.name = name;
     }
 

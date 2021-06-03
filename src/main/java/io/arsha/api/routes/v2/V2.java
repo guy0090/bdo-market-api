@@ -6,9 +6,9 @@ import java.util.List;
 import org.cache2k.Cache;
 
 import io.arsha.api.cache.CacheManager;
-import io.arsha.api.cache.UtilKey;
-import io.arsha.api.cache.V1Key;
-import io.arsha.api.cache.V2Key;
+import io.arsha.api.cache.UtilComposite;
+import io.arsha.api.cache.V1Composite;
+import io.arsha.api.cache.V2Composite;
 import io.arsha.api.market.enums.MarketEndpoint;
 import io.arsha.api.market.items.History;
 import io.arsha.api.market.items.HotListItem;
@@ -41,19 +41,18 @@ public class V2 {
         // Legacy
         api.operation("parsedAliasItem").handler(V2::GetWorldMarketSubList).failureHandler(Util::handleError);
         api.operation("parsedAliasOrders").handler(ctx -> GetBiddingOrPriceInfo(ctx, MarketEndpoint.GetBiddingInfoList)).failureHandler(Util::handleError);
-        
         api.operation("parsedAliasHistory").handler(ctx -> GetBiddingOrPriceInfo(ctx, MarketEndpoint.GetMarketPriceInfo)).failureHandler(Util::handleError);
     }
 
     /**
      * Get current hot list
      * 
-     * @param request the <code>V2Key</code> composite key 
+     * @param request the <code>V2Composite</code> composite key 
      * @return        <code>Future&lt;Buffer&gt;</code> of the list to grab
      */
-    public static Future<Buffer> getHotList(V2Key request) {
+    public static Future<Buffer> getHotList(V2Composite request) {
         Promise<Buffer> response = Promise.promise();
-        Future<Buffer> hotlist = CacheManager.getV1Cache(request.getRegion()).get(request.getChild());
+        Future<Buffer> hotlist = CacheManager.getV1Cache(request.getRegion()).get(request.getParent());
         
         hotlist.onSuccess(list -> {
             List<Future> dbFutures = new ArrayList<>();
@@ -62,7 +61,7 @@ public class V2 {
             for (String subItem : res.getString("resultMsg").split("[|]")) {
                 HotListItem i = new HotListItem(subItem.split("[-]"));
                 hotlistItems.add(i);
-                UtilKey util = new UtilKey(request.getLang(), new JsonObject().put("id", i.getId()));
+                UtilComposite util = new UtilComposite(request.getLang(), new JsonObject().put("id", i.getId()));
                 dbFutures.add(CacheManager.getDBCache().get(util));
             }
 
@@ -86,12 +85,12 @@ public class V2 {
     /**
      * Get all items in specified (sub)category
      * 
-     * @param request the <code>V2Key</code> list composite key 
+     * @param request the <code>V2Composite</code> list composite key 
      * @return        <code>Future&lt;Buffer&gt;</code> of the list to grab
      */
-    public static Future<Buffer> getMarketList(V2Key request) {
+    public static Future<Buffer> getMarketList(V2Composite request) {
         Promise<Buffer> response = Promise.promise();
-        Future<Buffer> marketList = CacheManager.getV1Cache(request.getRegion()).get(request.getChild());
+        Future<Buffer> marketList = CacheManager.getV1Cache(request.getRegion()).get(request.getParent());
 
         marketList.onSuccess(list -> {
             JsonArray res = new JsonArray();
@@ -112,13 +111,13 @@ public class V2 {
     /**
      * Get information for item and variants (enhancement levels)
      * 
-     * @param request the <code>V2Key</code> item composite key 
+     * @param request the <code>V2Composite</code> item composite key 
      * @return        <code>Future&lt;Buffer&gt;</code> of the item to grab
      */
-    public static Future<Buffer> getSubListItem(V2Key request) {
+    public static Future<Buffer> getSubListItem(V2Composite request) {
         Promise<Buffer> response = Promise.promise();
-        Future<Buffer> itemFuture = CacheManager.getV1Cache(request.getRegion()).get(request.getChild());
-        UtilKey util = new UtilKey(request.getLang(), new JsonObject().put("id", Integer.valueOf(request.getId())));
+        Future<Buffer> itemFuture = CacheManager.getV1Cache(request.getRegion()).get(request.getParent());
+        UtilComposite util = new UtilComposite(request.getLang(), new JsonObject().put("id", Integer.valueOf(request.getId())));
         Future<JsonObject> dbFuture = CacheManager.getDBCache().get(util);
 
         CompositeFuture.all(itemFuture, dbFuture).onSuccess(cf -> {
@@ -147,13 +146,13 @@ public class V2 {
     /**
      * Get item search information
      * 
-     * @param request the <code>V2Key</code> item composite key 
+     * @param request the <code>V2Composite</code> item composite key 
      * @return        <code>Future&lt;Buffer&gt;</code> of the item to grab
      */
-    public static Future<Buffer> getSearchItem(V2Key request) {
+    public static Future<Buffer> getSearchItem(V2Composite request) {
         Promise<Buffer> response = Promise.promise();
-        Cache<V1Key, Future<Buffer>> cache = CacheManager.getV1Cache(request.getRegion());
-        cache.get(request.getChild()).onSuccess(result -> {
+        Cache<V1Composite, Future<Buffer>> cache = CacheManager.getV1Cache(request.getRegion());
+        cache.get(request.getParent()).onSuccess(result -> {
             JsonObject asJson = result.toJsonObject();
             if (asJson.getString("resultMsg").equals("0")) {
                 response.complete(new SearchItem(request.getId()).toJson().toBuffer());
@@ -169,13 +168,13 @@ public class V2 {
     /** 
      * Get item order information
      * 
-     * @param request the <code>V2Key</code> item composite key 
+     * @param request the <code>V2Composite</code> item composite key 
      * @return        <code>Future&lt;Buffer&gt;</code> of the item to grab
      */
-    public static Future<Buffer> getBiddingList(V2Key request) {
+    public static Future<Buffer> getBiddingList(V2Composite request) {
         Promise<Buffer> response = Promise.promise();
-        Cache<V1Key, Future<Buffer>> cache = CacheManager.getV1Cache(request.getRegion());
-        cache.get(request.getChild()).onSuccess(result -> {
+        Cache<V1Composite, Future<Buffer>> cache = CacheManager.getV1Cache(request.getRegion());
+        cache.get(request.getParent()).onSuccess(result -> {
             JsonObject asJson = result.toJsonObject();
             if (asJson.getString("resultMsg").equals("0") || asJson.getInteger("resultCode") == 8) {
                 JsonObject order = new JsonObject()
@@ -201,13 +200,13 @@ public class V2 {
     /**
      * Get item price history information
      * 
-     * @param request the <code>V2Key</code> item composite key 
+     * @param request the <code>V2Composite</code> item composite key 
      * @return        <code>Future&lt;Buffer&gt;</code> of the item to grab
      */
-    public static Future<Buffer> getPriceInfo(V2Key request) {
+    public static Future<Buffer> getPriceInfo(V2Composite request) {
         Promise<Buffer> response = Promise.promise();
-        Cache<V1Key, Future<Buffer>> cache = CacheManager.getV1Cache(request.getRegion());
-        cache.get(request.getChild()).onSuccess(result -> {
+        Cache<V1Composite, Future<Buffer>> cache = CacheManager.getV1Cache(request.getRegion());
+        cache.get(request.getParent()).onSuccess(result -> {
             JsonObject asJson = result.toJsonObject();
             if (asJson.getString("resultMsg").equals("0") || asJson.getInteger("resultCode") == 8) {
                 JsonObject history = new JsonObject()
@@ -240,7 +239,7 @@ public class V2 {
         Util.validateLang(ctx, lang);
         if (ctx.failed()) return;
 
-        V2Key request = new V2Key("x", "x", region, MarketEndpoint.GetWorldMarketHotList, lang); //String.format("x:x:%s:0", region);
+        V2Composite request = new V2Composite("x", "x", region, MarketEndpoint.GetWorldMarketHotList, lang); //String.format("x:x:%s:0", region);
         Future<Buffer> hotlist = CacheManager.getV2Cache(region).get(request);
         hotlist.onSuccess(list -> {
             if (list.toJsonArray().size() == 1) ctx.response().end(list.toJsonArray().getJsonObject(0).encodePrettily());
@@ -260,7 +259,7 @@ public class V2 {
         String mainCategory = params.get("mainCategory");
         String subCategory = params.get("subCategory") == null ? "0" : params.get("subCategory");
 
-        V2Key request = new V2Key(mainCategory, subCategory, region, MarketEndpoint.GetWorldMarketList, "x"); //String.format("%s:%s:%s:1", mainCategory, subCategory, region);
+        V2Composite request = new V2Composite(mainCategory, subCategory, region, MarketEndpoint.GetWorldMarketList, "x"); //String.format("%s:%s:%s:1", mainCategory, subCategory, region);
         Future<Buffer> res = CacheManager.getV2Cache(region).get(request);
         res.onSuccess(list -> {
             if (list.toJsonArray().isEmpty()) ctx.fail(513);
@@ -286,7 +285,7 @@ public class V2 {
 
         List<Future> requests = new ArrayList<>();      
         ids.forEach(id -> {
-            V2Key request = new V2Key(id, "0", region, MarketEndpoint.GetWorldMarketSubList, lang); // String.format("%s:%s:%s:%s", id, 0, region, 2);
+            V2Composite request = new V2Composite(id, "0", region, MarketEndpoint.GetWorldMarketSubList, lang); // String.format("%s:%s:%s:%s", id, 0, region, 2);
             requests.add(CacheManager.getV2Cache(region).get(request));
         });
  
@@ -311,7 +310,7 @@ public class V2 {
         String ids = params.get("ids");
 
         List<Future> searchItems = new ArrayList<>();
-        for (String id : ids.split("[,]")) searchItems.add(getSearchItem(new V2Key(id, "x", region, MarketEndpoint.GetWorldMarketSearchList, "x")));
+        for (String id : ids.split("[,]")) searchItems.add(getSearchItem(new V2Composite(id, "x", region, MarketEndpoint.GetWorldMarketSearchList, "x")));
         
         CompositeFuture.all(searchItems).onSuccess(cf -> {
             JsonArray res = new JsonArray();
@@ -343,7 +342,7 @@ public class V2 {
         for (int i = 0; i < ids.size(); i++) {
             String id = ids.get(i);
             String sid = sids.isEmpty() ? "0" : sids.get(i);
-            V2Key request = new V2Key(id, sid, region, requestId, "x"); //String.format("%s:%s:%s:%s", id, sid, region, requestID);
+            V2Composite request = new V2Composite(id, sid, region, requestId, "x"); //String.format("%s:%s:%s:%s", id, sid, region, requestID);
             requests.add(CacheManager.getV2Cache(region).get(request));
         }
 
