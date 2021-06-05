@@ -59,7 +59,7 @@ public class API extends AbstractVerticle {
         new MicrometerMetricsOptions()
         .setPrometheusOptions(new VertxPrometheusOptions().setEnabled(useMetrics)
           .setStartEmbeddedServer(useMetrics)
-          .setEmbeddedServerOptions(new HttpServerOptions().setPort(8080))
+          .setEmbeddedServerOptions(new HttpServerOptions().setPort(metrics.getInteger("port")))
           .setEmbeddedServerEndpoint(metrics.getString("endpoint")))
         .setEnabled(useMetrics));
 
