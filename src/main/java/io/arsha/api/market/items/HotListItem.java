@@ -3,182 +3,188 @@ package io.arsha.api.market.items;
 import io.vertx.core.json.JsonObject;
 
 public class HotListItem {
-    public HotListItem(String[] itemString) {
-        this.id = Integer.valueOf(itemString[0]);
-        this.subId = Integer.valueOf(itemString[1]);
-        this.minEnhance = itemString[1];
-        this.maxEnhance = itemString[2];
-        this.basePrice = Long.valueOf(itemString[3]);
-        this.currentStock = Long.valueOf(itemString[4]);
-        this.totalTrades = Long.valueOf(itemString[5]);
-        this.priceChangeDirection = Integer.valueOf(itemString[6]);
-        this.priceChangeValue = Long.valueOf(itemString[7]);
-        this.priceMin = Long.valueOf(itemString[8]);
-        this.priceMax = Long.valueOf(itemString[9]);
-        this.lastSoldPrice = Long.valueOf(itemString[10]);
-        this.lastSoldTime = Long.valueOf(itemString[11]);
-        this.name = null;
-        this.icon = null;
-    }
 
-    private String name;
-    private int id;
-    private int subId;
-    private String minEnhance;
-    private String maxEnhance;
-    private Long basePrice;
-    private Long currentStock;
-    private Long totalTrades;
-    private int priceChangeDirection;
-    private Long priceChangeValue;
-    private Long priceMin;
-    private Long priceMax;
-    private Long lastSoldPrice;
-    private Long lastSoldTime;
-    private String icon;
+  /**
+  * Object for GetWorldMarketHotList result.
+  * @param itemString the <code>String[]</code> split resultMsg
+  *                   from central market response
+  */
+  public HotListItem(String[] itemString) {
+    this.id = Long.valueOf(itemString[0]);
+    this.subId = Long.valueOf(itemString[1]);
+    this.minEnhance = itemString[1];
+    this.maxEnhance = itemString[2];
+    this.basePrice = Long.valueOf(itemString[3]);
+    this.currentStock = Long.valueOf(itemString[4]);
+    this.totalTrades = Long.valueOf(itemString[5]);
+    this.priceChangeDirection = Integer.valueOf(itemString[6]);
+    this.priceChangeValue = Long.valueOf(itemString[7]);
+    this.priceMin = Long.valueOf(itemString[8]);
+    this.priceMax = Long.valueOf(itemString[9]);
+    this.lastSoldPrice = Long.valueOf(itemString[10]);
+    this.lastSoldTime = Long.valueOf(itemString[11]);
+    this.name = null;
+    this.icon = null;
+  }
 
-    public String getName() {
-        return this.name;
-    }
+  private String name;
+  private Long id;
+  private Long subId;
+  private String minEnhance;
+  private String maxEnhance;
+  private Long basePrice;
+  private Long currentStock;
+  private Long totalTrades;
+  private int priceChangeDirection;
+  private Long priceChangeValue;
+  private Long priceMin;
+  private Long priceMax;
+  private Long lastSoldPrice;
+  private Long lastSoldTime;
+  private String icon;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public String getName() {
+    return this.name;
+  }
 
-    public int getId() {
-        return this.id;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+  public Long getId() {
+    return this.id;
+  }
 
-    public int getSubId() {
-        return this.subId;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public void setSubId(int subId) {
-        this.subId = subId;
-    }
+  public Long getSubId() {
+    return this.subId;
+  }
 
-    public String getMinEnhance() {
-        return this.minEnhance;
-    }
+  public void setSubId(Long subId) {
+    this.subId = subId;
+  }
 
-    public void setMinEnhance(String minEnhance) {
-        this.minEnhance = minEnhance;
-    }
+  public String getMinEnhance() {
+    return this.minEnhance;
+  }
 
-    public String getMaxEnhance() {
-        return this.maxEnhance;
-    }
+  public void setMinEnhance(String minEnhance) {
+    this.minEnhance = minEnhance;
+  }
 
-    public void setMaxEnhance(String maxEnhance) {
-        this.maxEnhance = maxEnhance;
-    }
+  public String getMaxEnhance() {
+    return this.maxEnhance;
+  }
 
-    public Long getBasePrice() {
-        return this.basePrice;
-    }
+  public void setMaxEnhance(String maxEnhance) {
+    this.maxEnhance = maxEnhance;
+  }
 
-    public void setBasePrice(Long basePrice) {
-        this.basePrice = basePrice;
-    }
+  public Long getBasePrice() {
+    return this.basePrice;
+  }
 
-    public Long getCurrentStock() {
-        return this.currentStock;
-    }
+  public void setBasePrice(Long basePrice) {
+    this.basePrice = basePrice;
+  }
 
-    public void setCurrentStock(Long currentStock) {
-        this.currentStock = currentStock;
-    }
+  public Long getCurrentStock() {
+    return this.currentStock;
+  }
 
-    public Long getTotalTrades() {
-        return this.totalTrades;
-    }
+  public void setCurrentStock(Long currentStock) {
+    this.currentStock = currentStock;
+  }
 
-    public void setTotalTrades(Long totalTrades) {
-        this.totalTrades = totalTrades;
-    }
+  public Long getTotalTrades() {
+    return this.totalTrades;
+  }
 
-    public int getPriceChangeDirection() {
-        return this.priceChangeDirection;
-    }
+  public void setTotalTrades(Long totalTrades) {
+    this.totalTrades = totalTrades;
+  }
 
-    public void setPriceChangeDirection(int priceChangeDirection) {
-        this.priceChangeDirection = priceChangeDirection;
-    }
+  public int getPriceChangeDirection() {
+    return this.priceChangeDirection;
+  }
 
-    public Long getPriceChangeValue() {
-        return this.priceChangeValue;
-    }
+  public void setPriceChangeDirection(int priceChangeDirection) {
+    this.priceChangeDirection = priceChangeDirection;
+  }
 
-    public void setPriceChangeValue(Long priceChangeValue) {
-        this.priceChangeValue = priceChangeValue;
-    }
+  public Long getPriceChangeValue() {
+    return this.priceChangeValue;
+  }
 
-    public Long getPriceMin() {
-        return this.priceMin;
-    }
+  public void setPriceChangeValue(Long priceChangeValue) {
+    this.priceChangeValue = priceChangeValue;
+  }
 
-    public void setPriceMin(Long priceMin) {
-        this.priceMin = priceMin;
-    }
+  public Long getPriceMin() {
+    return this.priceMin;
+  }
 
-    public Long getPriceMax() {
-        return this.priceMax;
-    }
+  public void setPriceMin(Long priceMin) {
+    this.priceMin = priceMin;
+  }
 
-    public void setPriceMax(Long priceMax) {
-        this.priceMax = priceMax;
-    }
+  public Long getPriceMax() {
+    return this.priceMax;
+  }
 
-    public Long getLastSoldPrice() {
-        return this.lastSoldPrice;
-    }
+  public void setPriceMax(Long priceMax) {
+    this.priceMax = priceMax;
+  }
 
-    public void setLastSoldPrice(Long lastSoldPrice) {
-        this.lastSoldPrice = lastSoldPrice;
-    }
+  public Long getLastSoldPrice() {
+    return this.lastSoldPrice;
+  }
 
-    public Long getLastSoldTime() {
-        return this.lastSoldTime;
-    }
+  public void setLastSoldPrice(Long lastSoldPrice) {
+    this.lastSoldPrice = lastSoldPrice;
+  }
 
-    public void setLastSoldTime(Long lastSoldTime) {
-        this.lastSoldTime = lastSoldTime;
-    }
+  public Long getLastSoldTime() {
+    return this.lastSoldTime;
+  }
 
-    public String getIcon() {
-        return this.icon;
-    }
+  public void setLastSoldTime(Long lastSoldTime) {
+    this.lastSoldTime = lastSoldTime;
+  }
 
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-    
-    /**
-     * Returns <code>HotListItem</code> as <code>JsonObject</code>
-     * 
-     * @return the <code>JsonObject</code>
-     */
-    public JsonObject toJson() {
-        JsonObject json = new JsonObject()
-            .put("name", name)
-            .put("icon", icon)
-            .put("id", id)
-            .put("subId", subId)
-            .put("minEnhance", minEnhance)
-            .put("maxEnhance", maxEnhance)
-            .put("basePrice", basePrice)
-            .put("currentStock", currentStock)
-            .put("totalTrades", totalTrades)
-            .put("priceChangeDirection", priceChangeDirection)
-            .put("priceChangeValue", priceChangeValue)
-            .put("priceMin", priceMin)
-            .put("priceMax", priceMax)
-            .put("lastSoldPrice", lastSoldPrice)
-            .put("lastSoldTime", lastSoldTime);
-        return json;
-    }
+  public String getIcon() {
+    return this.icon;
+  }
+
+  public void setIcon(String icon) {
+    this.icon = icon;
+  }
+
+  /**
+  * Returns <code>HotListItem</code> as <code>JsonObject</code>.
+  *
+  * @return the <code>JsonObject</code>
+  */
+  public JsonObject toJson() {
+    JsonObject json = new JsonObject()
+        .put("name", name)
+        .put("icon", icon)
+        .put("id", id)
+        .put("subId", subId)
+        .put("minEnhance", minEnhance)
+        .put("maxEnhance", maxEnhance)
+        .put("basePrice", basePrice)
+        .put("currentStock", currentStock)
+        .put("totalTrades", totalTrades)
+        .put("priceChangeDirection", priceChangeDirection)
+        .put("priceChangeValue", priceChangeValue)
+        .put("priceMin", priceMin)
+        .put("priceMax", priceMax)
+        .put("lastSoldPrice", lastSoldPrice)
+        .put("lastSoldTime", lastSoldTime);
+    return json;
+  }
 }

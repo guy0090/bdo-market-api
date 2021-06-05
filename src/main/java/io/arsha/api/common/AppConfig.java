@@ -3,74 +3,80 @@ package io.arsha.api.common;
 import io.vertx.core.json.JsonObject;
 
 public class AppConfig {
-    public AppConfig(String json) {
-        JsonObject config = new JsonObject(json);
 
-        this.debug = config.getBoolean("debug");
-        this.docs = config.getString("docs");
-        this.app = config.getJsonObject("app");
-        this.metrics = config.getJsonObject("metrics");
-        this.util = config.getJsonObject("util");
-        this.cache = config.getJsonObject("cache");
-    }
+  /**
+   * The app configuration.
+   *
+   * @param json the Json <code>String</code> source
+   */
+  public AppConfig(String json) {
+    JsonObject config = new JsonObject(json);
 
-    private Boolean debug;
-    private String docs;
-    private JsonObject app;
-    private JsonObject metrics;
-    private JsonObject util;
-    private JsonObject cache;
+    this.debug = config.getBoolean("debug");
+    this.docs = config.getString("docs");
+    this.app = config.getJsonObject("app");
+    this.metrics = config.getJsonObject("metrics");
+    this.util = config.getJsonObject("util");
+    this.cache = config.getJsonObject("cache");
+  }
 
-    public Boolean isDebug() {
-        return this.debug;
-    }
+  private Boolean debug;
+  private String docs;
+  private JsonObject app;
+  private JsonObject metrics;
+  private JsonObject util;
+  private JsonObject cache;
 
-    public Boolean getDebug() {
-        return this.debug;
-    }
+  public Boolean isDebug() {
+    return this.debug;
+  }
 
-    public void setDebug(Boolean debug) {
-        this.debug = debug;
-    }
+  public Boolean getDebug() {
+    return this.debug;
+  }
 
-    public String getDocs() {
-        return this.docs;
-    }
+  public void setDebug(Boolean debug) {
+    this.debug = debug;
+  }
 
-    public void setDocs(String docs) {
-        this.docs = docs;
-    }
+  public String getDocs() {
+    return this.docs;
+  }
 
-    public JsonObject getApp() {
-        return this.app;
-    }
+  public void setDocs(String docs) {
+    this.docs = docs;
+  }
 
-    public void setApp(JsonObject app) {
-        this.app = app;
-    }
+  public JsonObject getApp() {
+    return this.app;
+  }
 
-    public JsonObject getMetrics() {
-        return this.metrics;
-    }
+  public void setApp(JsonObject app) {
+    this.app = app;
+  }
 
-    public void setMetrics(JsonObject metrics) {
-        this.metrics = metrics;
-    }
+  public JsonObject getMetrics() {
+    return this.metrics;
+  }
 
-    public JsonObject getUtil() {
-        return this.util;
-    }
+  public void setMetrics(JsonObject metrics) {
+    this.metrics = metrics;
+  }
 
-    public void setUtil(JsonObject util) {
-        this.util = util;
-    }
+  public JsonObject getUtil() {
+    return this.util;
+  }
 
-    public JsonObject getCache() {
-        return this.cache;
-    }
+  public void setUtil(JsonObject util) {
+    this.util = util;
+  }
 
-    public void setCache(JsonObject cache) {
-        this.cache = cache;
-    }
+  public JsonObject getCache() {
+    return this.cache;
+  }
+
+  public void setCache(JsonObject cache) {
+    this.cache = cache;
+  }
 
 }

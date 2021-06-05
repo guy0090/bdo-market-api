@@ -7,10 +7,10 @@ servers:
   - url: 'https://api.arsha.io/'
 paths:
   /v1/{region}/GetWorldMarketHotList:
-    get:
+    post:
       security: []
       summary: "GetWorldMarketHotList: Returns details of current hotlist items"
-      operationId: basicHotList
+      operationId: v1PostHotList
       tags:
         - v1
       parameters:
@@ -26,73 +26,33 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BasicResponsePlural"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
+                $ref: "#/components/schemas/BasicResponseSingular"
+        default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
+    get:
+      security: []
+      summary: "GetWorldMarketHotList: Returns details of current hotlist items"
+      operationId: v1HotList
+      tags:
+        - v1
+      parameters:
+        - $ref: "#/components/parameters/region"
+      responses:
+        "200":
+          description: "Good Request: Details of current hotlist items"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/BasicResponseSingular"
         default:
           description: Unexpected error
           content:
@@ -100,10 +60,50 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
   /v1/{region}/GetWorldMarketList:
+    post:
+      security: []
+      summary: "GetWorldMarketList: Returns details of items in (sub) category"
+      operationId: v1PostMarketList
+      tags:
+        - v1
+      parameters:
+        - $ref: "#/components/parameters/region"
+        - name: mainCategory
+          in: header
+          description: ID of main category
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: subCategory
+          in: header
+          description: ID of sub category
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        "200":
+          description: "Good Request: Details of items in (sub) category"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResponseSingular"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
     get:
       security: []
       summary: "GetWorldMarketList: Returns details of items in (sub) category"
-      operationId: basicMarketList
+      operationId: v1MarketList
       tags:
         - v1
       parameters:
@@ -133,73 +133,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BasicResponsePlural"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/BasicResponseSingular" 
         default:
           description: Unexpected error
           content:
@@ -207,10 +141,58 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
   /v1/{region}/GetWorldMarketSubList:
+    post:
+      security: []
+      summary: "GetWorldMarketSubList: Returns details of item(s)"
+      operationId: v1PostMarketSubList
+      tags:
+        - v1
+      parameters:
+        - $ref: "#/components/parameters/region"
+        - name: id
+          in: header
+          description: ID of the item
+          required: true
+          schema:
+            type: array
+            minItems: 1
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+          style: simple
+          explode: false
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [10007]
+            plural:
+              summary: Example with multiple IDs
+              value: [10007, 10006, 10005]
+      responses:
+        "200":
+          description: "Good Request: Details of item(s)"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/BasicResponseSingular"
+                  - $ref: "#/components/schemas/BasicResponsePlural"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
     get:
       security: []
       summary: "GetWorldMarketSubList: Returns details of item(s)"
-      operationId: basicMarketSubList
+      operationId: v1MarketSubList
       tags:
         - v1
       parameters:
@@ -231,7 +213,7 @@ paths:
           examples:
             singular:
               summary: Example with single ID
-              value: 10007
+              value: [10007]
             plural:
               summary: Example with multiple IDs
               value: [10007, 10006, 10005]
@@ -249,72 +231,6 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/BasicResponseSingular"
                   - $ref: "#/components/schemas/BasicResponsePlural"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         default:
           description: Unexpected error
           content:
@@ -322,10 +238,56 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
   /v1/{region}/GetWorldMarketSearchList:
+    post:
+      security: []
+      summary: "GetWorldMarketSearchList: Returns details of searched items"
+      operationId: v1PostMarketSearchList
+      tags:
+        - v1
+      parameters:
+        - $ref: "#/components/parameters/region"
+        - name: ids
+          in: header
+          description: Comma seperated list of ids
+          required: true
+          schema:
+            type: array
+            minItems: 1
+            maxItems: 100
+            items:
+              type: string
+              format: int32
+          style: simple
+          explode: false
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [10007]
+            plural:
+              summary: Example with multiple IDs
+              value: [10007, 10006, 10005]
+      responses:
+        "200":
+          description: "Good Request: Details of searched items"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResponseSingular"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
     get:
       security: []
       summary: "GetWorldMarketSearchList: Returns details of searched items"
-      operationId: basicMarketSearchList
+      operationId: v1MarketSearchList
       tags:
         - v1
       parameters:
@@ -346,7 +308,7 @@ paths:
           examples:
             singular:
               summary: Example with single ID
-              value: 10007
+              value: [10007]
             plural:
               summary: Example with multiple IDs
               value: [10007, 10006, 10005]
@@ -362,72 +324,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResponseSingular"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         default:
           description: Unexpected error
           content:
@@ -435,16 +331,16 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
   /v1/{region}/GetBiddingInfoList:
-    get:
+    post:
       security: []
       summary: "GetBiddingInfoList: Returns details of orders for item(s)"
-      operationId: basicMarketBiddingList
+      operationId: v1PostMarketBiddingList
       tags:
         - v1
       parameters:
         - $ref: "#/components/parameters/region"
         - name: id
-          in: query
+          in: header
           description: ID of the item
           required: true
           schema:
@@ -454,17 +350,17 @@ paths:
             items:
               type: integer
               format: int32
-          style: form
-          explode: true
+          style: simple
+          explode: false
           examples:
             singular:
               summary: Example with single ID
-              value: 10007
+              value: [10007]
             plural:
               summary: Example with multiple IDs
               value: [10007, 10006, 10005]
         - name: sid
-          in: query
+          in: header
           description: ID of the item
           required: false
           schema:
@@ -473,13 +369,14 @@ paths:
             items:
               type: integer
               format: int32
+              minimum: 0
               maximum: 20
-          style: form
-          explode: true
+          style: simple
+          explode: false
           examples:
             singular:
               summary: Example with single ID
-              value: 0
+              value: [0]
             plural:
               summary: Example with multiple IDs
               value: [0, 15, 20]
@@ -497,83 +394,16 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/BasicResponseSingular"
                   - $ref: "#/components/schemas/BasicResponsePlural"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /v1/{region}/GetMarketPriceInfo:
     get:
       security: []
-      summary: "GetMarketPriceInfo: Returns details of price history for item(s)"
-      operationId: basicMarketPriceInfo
+      summary: "GetBiddingInfoList: Returns details of orders for item(s)"
+      operationId: v1MarketBiddingList
       tags:
         - v1
       parameters:
@@ -594,7 +424,146 @@ paths:
           examples:
             singular:
               summary: Example with single ID
-              value: 10007
+              value: [10007]
+            plural:
+              summary: Example with multiple IDs
+              value: [10007, 10006, 10005]
+        - name: sid
+          in: query
+          description: ID of the item
+          required: false
+          schema:
+            type: array
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+              minimum: 0
+              maximum: 20
+          style: form
+          explode: true
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [0]
+            plural:
+              summary: Example with multiple IDs
+              value: [0, 15, 20]
+      responses:
+        "200":
+          description: "Good Request: Details of orders for item(s)"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/BasicResponseSingular"
+                  - $ref: "#/components/schemas/BasicResponsePlural"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /v1/{region}/GetMarketPriceInfo:
+    post:
+      security: []
+      summary: "GetMarketPriceInfo: Returns details of price history for item(s)"
+      operationId: v1PostMarketPriceInfo
+      tags:
+        - v1
+      parameters:
+        - $ref: "#/components/parameters/region"
+        - name: id
+          in: header
+          description: ID of the item
+          required: true
+          schema:
+            type: array
+            minItems: 1
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+          style: simple
+          explode: false
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [10007]
+            plural:
+              summary: Example with multiple IDs
+              value: [10007, 10006, 10005]
+        - name: sid
+          in: header
+          description: SID of the item - Defaults to 0 if not provided - If providing multipe ID and SID, the same amount of both must be provided
+          required: false
+          schema:
+            type: array
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+              minimum: 0
+              maximum: 20
+          style: simple
+          explode: false
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [0]
+            plural:
+              summary: Example with multiple IDs
+              value: [0, 15, 20]
+      responses:
+        "200":
+          description: "Good Request: Details of orders for item(s)"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/BasicResponseSingular"
+                  - $ref: "#/components/schemas/BasicResponsePlural"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    get:
+      security: []
+      summary: "GetMarketPriceInfo: Returns details of price history for item(s)"
+      operationId: v1MarketPriceInfo
+      tags:
+        - v1
+      parameters:
+        - $ref: "#/components/parameters/region"
+        - name: id
+          in: query
+          description: ID of the item
+          required: true
+          schema:
+            type: array
+            minItems: 1
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+          style: form
+          explode: true
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [10007]
             plural:
               summary: Example with multiple IDs
               value: [10007, 10006, 10005]
@@ -608,13 +577,14 @@ paths:
             items:
               type: integer
               format: int32
+              minimum: 0
               maximum: 20
           style: form
           explode: true
           examples:
             singular:
               summary: Example with single ID
-              value: 0
+              value: [0]
             plural:
               summary: Example with multiple IDs
               value: [0, 15, 20]
@@ -632,72 +602,6 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/BasicResponseSingular"
                   - $ref: "#/components/schemas/BasicResponsePlural"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         default:
           description: Unexpected error
           content:
@@ -705,16 +609,16 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
   /v1/{region}/item:
-    get:
+    post:
       security: []
       summary: "(Alias) item: Returns details of item(s)"
-      operationId: basicAliasItem
+      operationId: v1PostAliasItem
       tags:
         - v1
       parameters:
         - $ref: "#/components/parameters/region"
         - name: id
-          in: query
+          in: header
           description: ID of the item
           required: true
           schema:
@@ -724,12 +628,12 @@ paths:
             items:
               type: integer
               format: int32
-          style: form
-          explode: true
+          style: simple
+          explode: false
           examples:
             singular:
               summary: Example with single ID
-              value: 10007
+              value: [10007]
             plural:
               summary: Example with multiple IDs
               value: [10007, 10006, 10005]
@@ -747,72 +651,54 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/BasicResponseSingular"
                   - $ref: "#/components/schemas/BasicResponsePlural"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
+        default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
+    get:
+      security: []
+      summary: "(Alias) item: Returns details of item(s)"
+      operationId: v1AliasItem
+      tags:
+        - v1
+      parameters:
+        - $ref: "#/components/parameters/region"
+        - name: id
+          in: query
+          description: ID of the item
+          required: true
+          schema:
+            type: array
+            minItems: 1
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+          style: form
+          explode: true
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [10007]
+            plural:
+              summary: Example with multiple IDs
+              value: [10007, 10006, 10005]
+      responses:
+        "200":
+          description: "Good Request: Details of item(s)"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+                oneOf:
+                  - $ref: "#/components/schemas/BasicResponseSingular"
+                  - $ref: "#/components/schemas/BasicResponsePlural"
         default:
           description: Unexpected error
           content:
@@ -820,10 +706,79 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
   /v1/{region}/history:
+    post:
+      security: []
+      summary: "(Alias) history: Returns details of price history for item(s)"
+      operationId: v1PostAliasHistory
+      tags:
+        - v1
+      parameters:
+        - $ref: "#/components/parameters/region"
+        - name: id
+          in: header
+          description: ID of the item
+          required: true
+          schema:
+            type: array
+            minItems: 1
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+          style: simple
+          explode: false
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [10007]
+            plural:
+              summary: Example with multiple IDs
+              value: [10007, 10006, 10005]
+        - name: sid
+          in: header
+          description: SID of the item - Defaults to 0 if not provided - If providing multipe ID and SID, the same amount of both must be provided
+          required: false
+          schema:
+            type: array
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+              minimum: 0
+              maximum: 20
+          style: simple
+          explode: false
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [0]
+            plural:
+              summary: Example with multiple IDs
+              value: [0, 15, 20]
+      responses:
+        "200":
+          description: "Good Request: Details of history for item(s)"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/BasicResponseSingular"
+                  - $ref: "#/components/schemas/BasicResponsePlural"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
     get:
       security: []
       summary: "(Alias) history: Returns details of price history for item(s)"
-      operationId: basicAliasHistory
+      operationId: v1AliasHistory
       tags:
         - v1
       parameters:
@@ -844,10 +799,31 @@ paths:
           examples:
             singular:
               summary: Example with single ID
-              value: 10007
+              value: [10007]
             plural:
               summary: Example with multiple IDs
               value: [10007, 10006, 10005]
+        - name: sid
+          in: query
+          description: SID of the item - Defaults to 0 if not provided - If providing multipe ID and SID, the same amount of both must be provided
+          required: false
+          schema:
+            type: array
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+              minimum: 0
+              maximum: 20
+          style: form
+          explode: true
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [0]
+            plural:
+              summary: Example with multiple IDs
+              value: [0, 15, 20]
       responses:
         "200":
           description: "Good Request: Details of orders for item(s)"
@@ -862,72 +838,6 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/BasicResponseSingular"
                   - $ref: "#/components/schemas/BasicResponsePlural"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         default:
           description: Unexpected error
           content:
@@ -935,10 +845,79 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
   /v1/{region}/orders:
+    post:
+      security: []
+      summary: "(Alias) orders: Returns details of orders for item(s)"
+      operationId: v1PostAliasOrders
+      tags:
+        - v1
+      parameters:
+        - $ref: "#/components/parameters/region"
+        - name: id
+          in: header
+          description: ID of the item
+          required: true
+          schema:
+            type: array
+            minItems: 1
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+          style: simple
+          explode: false
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [10007]
+            plural:
+              summary: Example with multiple IDs
+              value: [10007, 10006, 10005]
+        - name: sid
+          in: header
+          description: SID of the item - Defaults to 0 if not provided - If providing multipe ID and SID, the same amount of both must be provided
+          required: false
+          schema:
+            type: array
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+              minimum: 0
+              maximum: 20
+          style: simple
+          explode: false
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [0]
+            plural:
+              summary: Example with multiple IDs
+              value: [0, 15, 20]
+      responses:
+        "200":
+          description: "Good Request: Details of orders for item(s)"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/BasicResponseSingular"
+                  - $ref: "#/components/schemas/BasicResponsePlural"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
     get:
       security: []
       summary: "(Alias) orders: Returns details of orders for item(s)"
-      operationId: basicAliasOrders
+      operationId: v1AliasOrders
       tags:
         - v1
       parameters:
@@ -959,10 +938,31 @@ paths:
           examples:
             singular:
               summary: Example with single ID
-              value: 10007
+              value: [10007]
             plural:
               summary: Example with multiple IDs
               value: [10007, 10006, 10005]
+        - name: sid
+          in: query
+          description: SID of the item - Defaults to 0 if not provided - If providing multipe ID and SID, the same amount of both must be provided
+          required: false
+          schema:
+            type: array
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+              minimum: 0
+              maximum: 20
+          style: form
+          explode: true
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [0]
+            plural:
+              summary: Example with multiple IDs
+              value: [0, 15, 20]
       responses:
         "200":
           description: "Good Request: Details of orders for item(s)"
@@ -977,72 +977,6 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/BasicResponseSingular"
                   - $ref: "#/components/schemas/BasicResponsePlural"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         default:
           description: Unexpected error
           content:
@@ -1050,10 +984,60 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
   /v1/{region}/price:
+    post:
+      security: []
+      summary: "price : Returns base price and details for item"
+      operationId: v1PostPrice
+      tags:
+        - v1
+      parameters:
+        - $ref: "#/components/parameters/region"
+        - name: id
+          in: header
+          description: ID of the item
+          required: true
+          schema:
+            type: integer
+            format: int32
+          examples:
+            singular:
+              summary: Example with single ID
+              value: 10007
+        - name: sid
+          in: header
+          description: SID of the item - Defaults to 0 if not provided - If providing multipe ID and SID, the same amount of both must be provided
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 20
+          examples:
+            singular:
+              summary: Example with single ID
+              value: 0
+      responses:
+        "200":
+          description: "Good Request: Details for item(s)"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResponseSingular"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
     get:
       security: []
       summary: "price : Returns base price and details for item"
-      operationId: basicPrice
+      operationId: v1Price
       tags:
         - v1
       parameters:
@@ -1078,6 +1062,7 @@ paths:
           schema:
             type: integer
             format: int32
+            minimum: 0
             maximum: 20
           examples:
             singular:
@@ -1085,7 +1070,7 @@ paths:
               value: 0
       responses:
         "200":
-          description: "Good Request: Details of orders for item(s)"
+          description: "Good Request: Details for item(s)"
           headers:
             Access-Control-Allow-Origin:
               description: Allowed origins
@@ -1095,72 +1080,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResponseSingular"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         default:
           description: Unexpected error
           content:
@@ -1169,10 +1088,10 @@ paths:
                 $ref: "#/components/schemas/Error"
 
   /v2/{region}/GetWorldMarketHotList:
-    get:
+    post:
       security: []
       summary: "GetWorldMarketHotList: Returns parsed details of current hotlist items"
-      operationId: parsedHotList
+      operationId: v2PostHotList
       tags:
         - v2
       parameters:
@@ -1233,72 +1152,76 @@ paths:
                       format: int32
                     icon:
                       type: string
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
+        default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
+    get:
+      security: []
+      summary: "GetWorldMarketHotList: Returns parsed details of current hotlist items"
+      operationId: v2HotList
+      tags:
+        - v2
+      parameters:
+        - $ref: "#/components/parameters/region"
+      responses:
+        "200":
+          description: "Good Request: Parsed details of current hotlist items"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    id:
+                      type: integer
+                      format: int32
+                    subId:
+                      type: integer
+                      format: int32
+                    minEnhance:
+                      type: string
+                    maxEnhance:
+                      type: string
+                    basePrice:
+                      type: integer
+                      format: int32
+                    currentStock:
+                      type: integer
+                      format: int32
+                    totalTrades:
+                      type: integer
+                      format: int32
+                    priceChangeDirection:
+                      type: integer
+                      format: int32
+                    priceChangeValue:
+                      type: integer
+                      format: int32
+                    priceMin:
+                      type: integer
+                      format: int32
+                    priceMax:
+                      type: integer
+                      format: int32
+                    lastSoldPrice:
+                      type: integer
+                      format: int32
+                    lastSoldTime:
+                      type: integer
+                      format: int32
+                    icon:
+                      type: string
         default:
           description: Unexpected error
           content:
@@ -1306,23 +1229,23 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
   /v2/{region}/GetWorldMarketList:
-    get:
+    post:
       security: []
       summary: "GetWorldMarketList: Returns parsed details of items in (sub) category"
-      operationId: parsedMarketList
+      operationId: v2PostMarketList
       tags:
         - v2
       parameters:
         - $ref: "#/components/parameters/region"
         - name: mainCategory
-          in: query
+          in: header
           description: ID of main category
           required: true
           schema:
             type: integer
             format: int32
         - name: subCategory
-          in: query
+          in: header
           description: ID of sub category
           required: false
           schema:
@@ -1332,7 +1255,7 @@ paths:
         "200":
           description: "Good Request: Parsed details of items in (sub) category"
           headers:
-            Access-Control-Allow-Origin: 
+            Access-Control-Allow-Origin:
               description: Allowed origins
               schema:
                 type: string
@@ -1355,72 +1278,61 @@ paths:
                     basePrice:
                       type: integer
                       format: int32
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
+        default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
+    get:
+      security: []
+      summary: "GetWorldMarketList: Returns parsed details of items in (sub) category"
+      operationId: v2MarketList
+      tags:
+        - v2
+      parameters:
+        - $ref: "#/components/parameters/region"
+        - name: mainCategory
+          in: query
+          description: ID of main category
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: subCategory
+          in: query
+          description: ID of sub category
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        "200":
+          description: "Good Request: Parsed details of items in (sub) category"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      format: int32
+                    currentStock:
+                      type: integer
+                      format: int32
+                    totalTrades:
+                      type: integer
+                      format: int32
+                    basePrice:
+                      type: integer
+                      format: int32
         default:
           description: Unexpected error
           content:
@@ -1428,16 +1340,16 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
   /v2/{region}/GetWorldMarketSubList:
-    get:
+    post:
       security: []
       summary: "GetWorldMarketSubList: Returns parsed details of item(s)"
-      operationId: parsedMarketSubList
+      operationId: v2PostMarketSubList
       tags:
         - v2
       parameters:
         - $ref: "#/components/parameters/region"
         - name: id
-          in: query
+          in: header
           description: ID of the item
           required: true
           schema:
@@ -1447,12 +1359,12 @@ paths:
             items:
               type: integer
               format: int32
-          style: form
-          explode: true
+          style: simple
+          explode: false
           examples:
             singular:
               summary: Example with single ID
-              value: 10007
+              value: [10007]
             plural:
               summary: Example with multiple IDs
               value: [10007, 10006, 10005]
@@ -1547,90 +1459,23 @@ paths:
                           format: int32
                         icon:
                           type: string
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /v2/{region}/GetWorldMarketSearchList:
     get:
       security: []
-      summary: "GetWorldMarketSearchList: Returns parsed details of searched items"
-      operationId: parsedMarketSearchList
+      summary: "GetWorldMarketSubList: Returns parsed details of item(s)"
+      operationId: v2MarketSubList
       tags:
         - v2
       parameters:
         - $ref: "#/components/parameters/region"
-        - name: ids
+        - name: id
           in: query
-          description: Comma seperated list of ids
+          description: ID of the item
           required: true
           schema:
             type: array
@@ -1640,11 +1485,137 @@ paths:
               type: integer
               format: int32
           style: form
+          explode: true
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [10007]
+            plural:
+              summary: Example with multiple IDs
+              value: [10007, 10006, 10005]
+      responses:
+        "200":
+          description: "Good Request: Parsed details of item(s)"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: array
+                    items:
+                      type: array
+                      items:
+                        properties:
+                          name:
+                            type: string
+                          id:
+                            type: integer
+                            format: int32
+                          subId:
+                            type: integer
+                            format: int32
+                          minEnhance:
+                            type: string
+                          maxEnhance:
+                            type: string
+                          basePrice:
+                            type: integer
+                            format: int32
+                          amountListed:
+                            type: integer
+                            format: int32
+                          totalTrades:
+                            type: integer
+                            format: int32
+                          priceMin:
+                            type: integer
+                            format: int32
+                          priceMax:
+                            type: integer
+                            format: int32
+                          lastSoldPrice:
+                            type: integer
+                            format: int32
+                          lastSoldTime:
+                            type: integer
+                            format: int32
+                          icon:
+                            type: string
+                  - type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        id:
+                          type: integer
+                          format: int32
+                        subId:
+                          type: integer
+                          format: int32
+                        minEnhance:
+                          type: string
+                        maxEnhance:
+                          type: string
+                        basePrice:
+                          type: integer
+                          format: int32
+                        amountListed:
+                          type: integer
+                          format: int32
+                        totalTrades:
+                          type: integer
+                          format: int32
+                        priceMin:
+                          type: integer
+                          format: int32
+                        priceMax:
+                          type: integer
+                          format: int32
+                        lastSoldPrice:
+                          type: integer
+                          format: int32
+                        lastSoldTime:
+                          type: integer
+                          format: int32
+                        icon:
+                          type: string
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /v2/{region}/GetWorldMarketSearchList:
+    post:
+      security: []
+      summary: "GetWorldMarketSearchList: Returns parsed details of searched items"
+      operationId: v2PostMarketSearchList
+      tags:
+        - v2
+      parameters:
+        - $ref: "#/components/parameters/region"
+        - name: ids
+          in: header
+          description: Comma seperated list of ids
+          required: true
+          schema:
+            type: array
+            minItems: 1
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+          style: simple
           explode: false
           examples:
             singular:
               summary: Example with single ID
-              value: 10007
+              value: [10007]
             plural:
               summary: Example with multiple IDs
               value: [10007, 10006, 10005]
@@ -1690,72 +1661,82 @@ paths:
                         basePrice:
                           type: integer
                           format: int32
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
+        default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
+    get:
+      security: []
+      summary: "GetWorldMarketSearchList: Returns parsed details of searched items"
+      operationId: v2MarketSearchList
+      tags:
+        - v2
+      parameters:
+        - $ref: "#/components/parameters/region"
+        - name: ids
+          in: query
+          description: Comma seperated list of ids
+          required: true
+          schema:
+            type: array
+            minItems: 1
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+          style: form
+          explode: false
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [10007]
+            plural:
+              summary: Example with multiple IDs
+              value: [10007, 10006, 10005]
+      responses:
+        "200":
+          description: "Good Request: Parsed details of searched items"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+                oneOf:
+                  - type: object
+                    properties:
+                      id:
+                        type: integer
+                        format: int32
+                      currentStock:
+                        type: integer
+                        format: int32
+                      totalTrades:
+                        type: integer
+                        format: int32
+                      basePrice:
+                        type: integer
+                        format: int32
+                  - type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          format: int32
+                        currentStock:
+                          type: integer
+                          format: int32
+                        totalTrades:
+                          type: integer
+                          format: int32
+                        basePrice:
+                          type: integer
+                          format: int32
         default:
           description: Unexpected error
           content:
@@ -1763,10 +1744,79 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
   /v2/{region}/GetBiddingInfoList:
+    post:
+      security: []
+      summary: "GetBiddingInfoList: Returns parsed details of orders for item(s)"
+      operationId: v2PostMarketBiddingList
+      tags:
+        - v2
+      parameters:
+        - $ref: "#/components/parameters/region"
+        - name: id
+          in: header
+          description: ID of the item
+          required: true
+          schema:
+            type: array
+            minItems: 1
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+          style: simple
+          explode: false
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [10007]
+            plural:
+              summary: Example with multiple IDs
+              value: [10007, 10006, 10005]
+        - name: sid
+          in: header
+          description: SID of the item - Defaults to 0 if not provided - If providing multipe ID and SID, the same amount of both must be provided
+          required: false
+          schema:
+            type: array
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+              minimum: 0
+              maximum: 20
+          style: simple
+          explode: false
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [0]
+            plural:
+              summary: Example with multiple IDs
+              value: [0, 15, 20]
+      responses:
+        "200":
+          description: "Good Request: Parsed details of orders for item(s)"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/BasicResponseSingular"
+                  - $ref: "#/components/schemas/BasicResponsePlural"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
     get:
       security: []
       summary: "GetBiddingInfoList: Returns parsed details of orders for item(s)"
-      operationId: parsedMarketBiddingList
+      operationId: v2MarketBiddingList
       tags:
         - v2
       parameters:
@@ -1787,7 +1837,7 @@ paths:
           examples:
             singular:
               summary: Example with single ID
-              value: 10007
+              value: [10007]
             plural:
               summary: Example with multiple IDs
               value: [10007, 10006, 10005]
@@ -1801,13 +1851,14 @@ paths:
             items:
               type: integer
               format: int32
+              minimum: 0
               maximum: 20
           style: form
           explode: true
           examples:
             singular:
               summary: Example with single ID
-              value: 0
+              value: [0]
             plural:
               summary: Example with multiple IDs
               value: [0, 15, 20]
@@ -1825,72 +1876,6 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/BasicResponseSingular"
                   - $ref: "#/components/schemas/BasicResponsePlural"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         default:
           description: Unexpected error
           content:
@@ -1898,16 +1883,16 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
   /v2/{region}/GetMarketPriceInfo:
-    get:
+    post:
       security: []
       summary: "GetMarketPriceInfo: Returns parsed details of price history for item(s)"
-      operationId: parsedMarketPriceInfo
+      operationId: v2PostMarketPriceInfo
       tags:
         - v2
       parameters:
         - $ref: "#/components/parameters/region"
         - name: id
-          in: query
+          in: header
           description: ID of the item
           required: true
           schema:
@@ -1917,17 +1902,17 @@ paths:
             items:
               type: integer
               format: int32
-          style: form
-          explode: true
+          style: simple
+          explode: false
           examples:
             singular:
               summary: Example with single ID
-              value: 10007
+              value: [10007]
             plural:
               summary: Example with multiple IDs
               value: [10007, 10006, 10005]
         - name: sid
-          in: query
+          in: header
           description: SID of the item - Defaults to 0 if not provided - If providing multipe ID and SID, the same amount of both must be provided
           required: false
           schema:
@@ -1936,13 +1921,14 @@ paths:
             items:
               type: integer
               format: int32
+              minimum: 0
               maximum: 20
-          style: form
-          explode: true
+          style: simple
+          explode: false
           examples:
             singular:
               summary: Example with single ID
-              value: 0
+              value: [0]
             plural:
               summary: Example with multiple IDs
               value: [0, 15, 20]
@@ -1960,83 +1946,16 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/BasicResponseSingular"
                   - $ref: "#/components/schemas/BasicResponsePlural"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /v2/{region}/item:
     get:
       security: []
-      summary: "(Alias) item: Returns parsed details of item(s)"
-      operationId: parsedAliasItem
+      summary: "GetMarketPriceInfo: Returns parsed details of price history for item(s)"
+      operationId: v2MarketPriceInfo
       tags:
         - v2
       parameters:
@@ -2057,7 +1976,77 @@ paths:
           examples:
             singular:
               summary: Example with single ID
-              value: 10007
+              value: [10007]
+            plural:
+              summary: Example with multiple IDs
+              value: [10007, 10006, 10005]
+        - name: sid
+          in: query
+          description: SID of the item - Defaults to 0 if not provided - If providing multipe ID and SID, the same amount of both must be provided
+          required: false
+          schema:
+            type: array
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+              minimum: 0
+              maximum: 20
+          style: form
+          explode: true
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [0]
+            plural:
+              summary: Example with multiple IDs
+              value: [0, 15, 20]
+      responses:
+        "200":
+          description: "Good Request: Parsed details of orders for item(s)"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/BasicResponseSingular"
+                  - $ref: "#/components/schemas/BasicResponsePlural"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /v2/{region}/item:
+    post:
+      security: []
+      summary: "(Alias) item: Returns parsed details of item(s)"
+      operationId: v2PostAliasItem
+      tags:
+        - v2
+      parameters:
+        - $ref: "#/components/parameters/region"
+        - name: id
+          in: header
+          description: ID of the item
+          required: true
+          schema:
+            type: array
+            minItems: 1
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+          style: simple
+          explode: false
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [10007]
             plural:
               summary: Example with multiple IDs
               value: [10007, 10006, 10005]
@@ -2152,83 +2141,16 @@ paths:
                           format: int32
                         icon:
                           type: string
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /v2/{region}/history:
     get:
       security: []
-      summary: "(Alias) history: Returns parsed details of price history for item(s)"
-      operationId: parsedAliasHistory
+      summary: "(Alias) item: Returns parsed details of item(s)"
+      operationId: v2AliasItem
       tags:
         - v2
       parameters:
@@ -2249,12 +2171,138 @@ paths:
           examples:
             singular:
               summary: Example with single ID
-              value: 10007
+              value: [10007]
+            plural:
+              summary: Example with multiple IDs
+              value: [10007, 10006, 10005]
+      responses:
+        "200":
+          description: "Good Request: Parsed details of item(s)"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: array
+                    items:
+                      type: array
+                      items:
+                        properties:
+                          name:
+                            type: string
+                          id:
+                            type: integer
+                            format: int32
+                          subId:
+                            type: integer
+                            format: int32
+                          minEnhance:
+                            type: string
+                          maxEnhance:
+                            type: string
+                          basePrice:
+                            type: integer
+                            format: int32
+                          amountListed:
+                            type: integer
+                            format: int32
+                          totalTrades:
+                            type: integer
+                            format: int32
+                          priceMin:
+                            type: integer
+                            format: int32
+                          priceMax:
+                            type: integer
+                            format: int32
+                          lastSoldPrice:
+                            type: integer
+                            format: int32
+                          lastSoldTime:
+                            type: integer
+                            format: int32
+                          icon:
+                            type: string
+                  - type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        id:
+                          type: integer
+                          format: int32
+                        subId:
+                          type: integer
+                          format: int32
+                        minEnhance:
+                          type: string
+                        maxEnhance:
+                          type: string
+                        basePrice:
+                          type: integer
+                          format: int32
+                        amountListed:
+                          type: integer
+                          format: int32
+                        totalTrades:
+                          type: integer
+                          format: int32
+                        priceMin:
+                          type: integer
+                          format: int32
+                        priceMax:
+                          type: integer
+                          format: int32
+                        lastSoldPrice:
+                          type: integer
+                          format: int32
+                        lastSoldTime:
+                          type: integer
+                          format: int32
+                        icon:
+                          type: string
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /v2/{region}/history:
+    post:
+      security: []
+      summary: "(Alias) history: Returns parsed details of price history for item(s)"
+      operationId: v2PostAliasHistory
+      tags:
+        - v2
+      parameters:
+        - $ref: "#/components/parameters/region"
+        - name: id
+          in: header
+          description: ID of the item
+          required: true
+          schema:
+            type: array
+            minItems: 1
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+          style: simple
+          explode: false
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [10007]
             plural:
               summary: Example with multiple IDs
               value: [10007, 10006, 10005]
         - name: sid
-          in: query
+          in: header
           description: SID of the item - Defaults to 0 if not provided - If providing multipe ID and SID, the same amount of both must be provided
           required: false
           schema:
@@ -2263,13 +2311,14 @@ paths:
             items:
               type: integer
               format: int32
+              minimum: 0
               maximum: 20
-          style: form
-          explode: true
+          style: simple
+          explode: false
           examples:
             singular:
               summary: Example with single ID
-              value: 0
+              value: [0]
             plural:
               summary: Example with multiple IDs
               value: [0, 15, 20]
@@ -2287,83 +2336,16 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/BasicResponseSingular"
                   - $ref: "#/components/schemas/BasicResponsePlural"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /v2/{region}/orders:
     get:
       security: []
-      summary: "(Alias) orders: Returns parsed details of orders for item(s)"
-      operationId: parsedAliasOrders
+      summary: "(Alias) history: Returns parsed details of price history for item(s)"
+      operationId: v2AliasHistory
       tags:
         - v2
       parameters:
@@ -2378,13 +2360,13 @@ paths:
             maxItems: 100
             items:
               type: integer
-              format: int32 
+              format: int32
           style: form
           explode: true
           examples:
             singular:
               summary: Example with single ID
-              value: 10007
+              value: [10007]
             plural:
               summary: Example with multiple IDs
               value: [10007, 10006, 10005]
@@ -2398,13 +2380,84 @@ paths:
             items:
               type: integer
               format: int32
+              minimum: 0
               maximum: 20
           style: form
           explode: true
           examples:
             singular:
               summary: Example with single ID
-              value: 0
+              value: [0]
+            plural:
+              summary: Example with multiple IDs
+              value: [0, 15, 20]
+      responses:
+        "200":
+          description: "Good Request: Details of orders for item(s)"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/BasicResponseSingular"
+                  - $ref: "#/components/schemas/BasicResponsePlural"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /v2/{region}/orders:
+    post:
+      security: []
+      summary: "(Alias) orders: Returns parsed details of orders for item(s)"
+      operationId: v2PostAliasOrders
+      tags:
+        - v2
+      parameters:
+        - $ref: "#/components/parameters/region"
+        - name: id
+          in: header
+          description: ID of the item
+          required: true
+          schema:
+            type: array
+            minItems: 1
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+          style: simple
+          explode: false
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [10007]
+            plural:
+              summary: Example with multiple IDs
+              value: [10007, 10006, 10005]
+        - name: sid
+          in: header
+          description: SID of the item - Defaults to 0 if not provided - If providing multipe ID and SID, the same amount of both must be provided
+          required: false
+          schema:
+            type: array
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+              minimum: 0
+              maximum: 20
+          style: simple
+          explode: false
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [0]
             plural:
               summary: Example with multiple IDs
               value: [0, 15, 20]
@@ -2422,72 +2475,75 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/BasicResponseSingular"
                   - $ref: "#/components/schemas/BasicResponsePlural"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
+        default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
+    get:
+      security: []
+      summary: "(Alias) orders: Returns parsed details of orders for item(s)"
+      operationId: v2AliasOrders
+      tags:
+        - v2
+      parameters:
+        - $ref: "#/components/parameters/region"
+        - name: id
+          in: query
+          description: ID of the item
+          required: true
+          schema:
+            type: array
+            minItems: 1
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+          style: form
+          explode: true
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [10007]
+            plural:
+              summary: Example with multiple IDs
+              value: [10007, 10006, 10005]
+        - name: sid
+          in: query
+          description: SID of the item - Defaults to 0 if not provided - If providing multipe ID and SID, the same amount of both must be provided
+          required: false
+          schema:
+            type: array
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+              minimum: 0
+              maximum: 20
+          style: form
+          explode: true
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [0]
+            plural:
+              summary: Example with multiple IDs
+              value: [0, 15, 20]
+      responses:
+        "200":
+          description: "Good Request: Parsed details of orders for item(s)"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+                oneOf:
+                  - $ref: "#/components/schemas/BasicResponseSingular"
+                  - $ref: "#/components/schemas/BasicResponsePlural"
         default:
           description: Unexpected error
           content:
@@ -2496,6 +2552,75 @@ paths:
                 $ref: "#/components/schemas/Error"
 
   /util/db:
+    post:
+      security: []
+      summary: "Item DB: Returns details of item(s) from DB"
+      operationId: postUtilDB
+      tags:
+        - util
+      parameters:
+        - $ref: "#/components/parameters/lang"
+        - name: id
+          in: header
+          description: ID of the item
+          required: true
+          schema:
+            type: array
+            minItems: 1
+            items:
+              type: integer
+              format: int32
+          style: simple
+          explode: false
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [10007]
+            plural:
+              summary: Example with multiple IDs
+              value: [10007, 10006, 10005]
+      responses:
+        "200":
+          description: "Good Request: Details of item(s) from DB"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - type: object
+                    properties:
+                      id:
+                        type: integer
+                        format: int32
+                      name:
+                        type: string
+                      grade:
+                        type: string
+                      icon:
+                        type: string
+                  - type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          format: int32
+                        name:
+                          type: string
+                        grade:
+                          type: string
+                        icon:
+                          type: string
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
     get:
       security: []
       summary: "Item DB: Returns details of item(s) from DB"
@@ -2560,67 +2685,7 @@ paths:
                           type: string
                         icon:
                           type: string
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
+        default:
           description: Unexpected error
           content:
             application/json:
@@ -2678,72 +2743,6 @@ paths:
                           type: string
                         icon:
                           type: string
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         default:
           description: Unexpected error
           content:
@@ -2751,31 +2750,30 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
   /util/db/recipes:
-    get:
+    post:
       security: []
       summary: "Recipe DB: Returns details of recipe(s) from DB"
-      operationId: utilRecipeDB
+      operationId: postUtilRecipeDB
       tags:
         - util
       parameters:
         - $ref: "#/components/parameters/lang"
         - name: id
-          in: query
+          in: header
           description: ID of the item
           required: true
           schema:
             type: array
             minItems: 1
-            maxItems: 100
             items:
               type: integer
               format: int32
-          style: form
-          explode: true
+          style: simple
+          explode: false
           examples:
             singular:
               summary: Example with single ID
-              value: 1
+              value: [1]
             plural:
               summary: Example with multiple IDs
               value: [1, 3, 4]
@@ -2848,83 +2846,16 @@ paths:
                               quantity:
                                 type: integer
                                 format: int32
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /util/db/mrecipes:
     get:
       security: []
-      summary: "M-Recipe DB: Returns details of m-recipe(s) from DB"
-      operationId: utilMRecipeDB
+      summary: "Recipe DB: Returns details of recipe(s) from DB"
+      operationId: utilRecipeDB
       tags:
         - util
       parameters:
@@ -2945,7 +2876,110 @@ paths:
           examples:
             singular:
               summary: Example with single ID
-              value: 1
+              value: [1]
+            plural:
+              summary: Example with multiple IDs
+              value: [1, 3, 4]
+      responses:
+        "200":
+          description: "Good Request: Details of recipe(s) from DB"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    required:
+                      - locale
+                    properties:
+                      locale:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              format: int32
+                            name:
+                              type: string
+                            lifeskill:
+                              type: string
+                            level:
+                              type: string
+                            exp:
+                              type: string
+                            components:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  id:
+                                    type: integer
+                                    format: int32
+                                  quantity:
+                                    type: integer
+                                    format: int32
+                  - type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          format: int32
+                        name:
+                          type: string
+                        lifeskill:
+                          type: string
+                        level:
+                          type: string
+                        exp:
+                          type: string
+                        components:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                                format: int32
+                              quantity:
+                                type: integer
+                                format: int32
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /util/db/mrecipes:
+    post:
+      security: []
+      summary: "M-Recipe DB: Returns details of m-recipe(s) from DB"
+      operationId: postUtilMRecipeDB
+      tags:
+        - util
+      parameters:
+        - $ref: "#/components/parameters/lang"
+        - name: id
+          in: header
+          description: ID of the item
+          required: true
+          schema:
+            type: array
+            minItems: 1
+            items:
+              type: integer
+              format: int32
+          style: simple
+          explode: false
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [1]
             plural:
               summary: Example with multiple IDs
               value: [1, 3, 4]
@@ -3011,72 +3045,102 @@ paths:
                               quantity:
                                 type: integer
                                 format: int32
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
+        default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
+    get:
+      security: []
+      summary: "M-Recipe DB: Returns details of m-recipe(s) from DB"
+      operationId: utilMRecipeDB
+      tags:
+        - util
+      parameters:
+        - $ref: "#/components/parameters/lang"
+        - name: id
+          in: query
+          description: ID of the item
+          required: true
+          schema:
+            type: array
+            minItems: 1
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+          style: form
+          explode: true
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [1]
+            plural:
+              summary: Example with multiple IDs
+              value: [1, 3, 4]
+      responses:
+        "200":
+          description: "Good Request: Details of m-recipe(s) from DB"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+                oneOf:
+                  - type: object
+                    properties:
+                      id:
+                        type: integer
+                        format: int32
+                      name:
+                        type: string
+                      lifeskill:
+                        type: string
+                      level:
+                        type: string
+                      exp:
+                        type: string
+                      components:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              format: int32
+                            quantity:
+                              type: integer
+                              format: int32
+                  - type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          format: int32
+                        name:
+                          type: string
+                        lifeskill:
+                          type: string
+                        level:
+                          type: string
+                        exp:
+                          type: string
+                        components:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                                format: int32
+                              quantity:
+                                type: integer
+                                format: int32
         default:
           description: Unexpected error
           content:
@@ -3161,72 +3225,6 @@ paths:
                               quantity:
                                 type: integer
                                 format: int32
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         default:
           description: Unexpected error
           content:
@@ -3311,72 +3309,6 @@ paths:
                               quantity:
                                 type: integer
                                 format: int32
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         default:
           description: Unexpected error
           content:
@@ -3384,31 +3316,30 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
   /util/db/recipes/matgroups:
-    get:
+    post:
       security: []
       summary: "Material Group DB: Returns details of material group(s) from DB"
-      operationId: utilMatgroupDB
+      operationId: postUtilMatgroupDB
       tags:
         - util
       parameters:
         - $ref: "#/components/parameters/lang"
         - name: id
-          in: query
+          in: header
           description: ID of the item
           required: true
           schema:
             type: array
             minItems: 1
-            maxItems: 100
             items:
               type: integer
               format: int32
-          style: form
-          explode: true
+          style: simple
+          explode: false
           examples:
             singular:
               summary: Example with single ID
-              value: 1
+              value: [1]
             plural:
               summary: Example with multiple IDs
               value: [1, 2, 3]
@@ -3459,72 +3390,87 @@ paths:
                                   type: string
                                 id:
                                   type: string
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
+        default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
+    get:
+      security: []
+      summary: "Material Group DB: Returns details of material group(s) from DB"
+      operationId: utilMatgroupDB
+      tags:
+        - util
+      parameters:
+        - $ref: "#/components/parameters/lang"
+        - name: id
+          in: query
+          description: ID of the item
+          required: true
+          schema:
+            type: array
+            minItems: 1
+            maxItems: 100
+            items:
+              type: integer
+              format: int32
+          style: form
+          explode: true
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [1]
+            plural:
+              summary: Example with multiple IDs
+              value: [1, 2, 3]
+      responses:
+        "200":
+          description: "Good Request: Details of item(s) from DB"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+                oneOf:
+                  - type: object
+                    required:
+                      - id
+                      - mg
+                    properties:
+                      id:
+                        type: integer
+                        format: int32
+                      mg:
+                        type: object
+                        properties:
+                          id:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                              id:
+                                type: string
+                  - type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          format: int32
+                        mg:
+                          type: object
+                          properties:
+                            id:
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                id:
+                                  type: string
         default:
           description: Unexpected error
           content:
@@ -3532,6 +3478,86 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
   /util/db/mrecipes/matgroups:
+    post:
+      security: []
+      summary: "M-Material Group DB: Returns details of m-material group(s) from DB"
+      operationId: postUtilMMatgroupDB
+      tags:
+        - util
+      parameters:
+        - $ref: "#/components/parameters/lang"
+        - name: id
+          in: header
+          description: ID of the item
+          required: true
+          schema:
+            type: array
+            minItems: 1
+            items:
+              type: integer
+              format: int32
+          style: simple
+          explode: false
+          examples:
+            singular:
+              summary: Example with single ID
+              value: [1]
+            plural:
+              summary: Example with multiple IDs
+              value: [1, 2, 3]
+      responses:
+        "200":
+          description: "Good Request: Details of item(s) from DB"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    required:
+                      - id
+                      - mg
+                    properties:
+                      id:
+                        type: integer
+                        format: int32
+                      mg:
+                        type: object
+                        properties:
+                          id:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                              id:
+                                type: string
+                  - type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          format: int32
+                        mg:
+                          type: object
+                          properties:
+                            id:
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                id:
+                                  type: string
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
     get:
       security: []
       summary: "M-Material Group DB: Returns details of m-material group(s) from DB"
@@ -3607,72 +3633,6 @@ paths:
                                   type: string
                                 id:
                                   type: string
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         default:
           description: Unexpected error
           content:
@@ -3704,7 +3664,7 @@ paths:
                     required:
                       - locale
                     properties:
-                      locale: 
+                      locale:
                         type: object
                         properties:
                           id:
@@ -3739,66 +3699,6 @@ paths:
                                   type: string
         "400":
           description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
           content:
             application/json:
               schema:
@@ -3834,7 +3734,7 @@ paths:
                     required:
                       - locale
                     properties:
-                      locale: 
+                      locale:
                         type: object
                         properties:
                           id:
@@ -3867,72 +3767,6 @@ paths:
                                   type: string
                                 id:
                                   type: string
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "405":
-          description: Method not supported
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "452":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "453":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "454":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "455":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "512":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "513":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "514":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         default:
           description: Unexpected error
           content:
@@ -3957,7 +3791,7 @@ components:
       schema:
         maxLength: 12
         type: string
-        pattern: ^[A-Za-z_]{0,12}$ 
+        pattern: ^[A-Za-z_]{0,12}$
       required: true
       description: Game region
   schemas:
@@ -3966,7 +3800,7 @@ components:
       properties:
         resultMsg:
           type: string
-          pattern: ^[A-Za-z ]{0,}$
+          pattern: ^[A-Za-z0-9-|]{0,}$
         resultCode:
           type: integer
           format: int32
@@ -3979,7 +3813,7 @@ components:
         properties:
           resultMsg:
             type: string
-            pattern: ^[A-Za-z ]{0,}$
+            pattern: ^[A-Za-z0-9-|]{0,}$
           resultCode:
             type: integer
             format: int32
@@ -3991,7 +3825,10 @@ components:
           format: int32
         message:
           type: string
-          pattern: ^[A-Za-z ]{0,}$
+          pattern: ^[A-Za-z0-9 ]{0,}$
         request:
           type: string
-          pattern: ^[A-Za-z ]{0,}$
+          pattern: ^[A-Za-z0-9-/|?&]{0,}$
+        request-id:
+          type: string
+          format: uuid

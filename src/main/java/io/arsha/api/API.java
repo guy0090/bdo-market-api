@@ -1,9 +1,5 @@
 package io.arsha.api;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import io.arsha.api.cache.CacheManager;
 import io.arsha.api.common.AppConfig;
 import io.arsha.api.market.Marketplace;
@@ -30,117 +26,119 @@ import io.vertx.ext.web.openapi.RouterBuilder;
 import io.vertx.micrometer.MicrometerMetricsOptions;
 import io.vertx.micrometer.VertxPrometheusOptions;
 
-public class API extends AbstractVerticle {
-	private static Logger logger = LoggerFactory.getLogger(API.class);
-	public static AppConfig config = null;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
-	public static void main(String[] args) {
-		try {
-			String file = new String(Files.readAllBytes(Paths.get("conf/config.json")));
-			config = new AppConfig(file);
+public class Api extends AbstractVerticle {
+  private static Logger logger = LoggerFactory.getLogger(Api.class);
+  public static AppConfig config = null;
 
-			new String(Files.readAllBytes(Paths.get("api/key.txt")));
-			new String(Files.readAllBytes(Paths.get("conf/mongo.json"))); 
-		} catch (IOException io) {
-			logger.error("Exiting: error reading a config: " + io.getMessage());
-			return;
-		}
+  /**
+   * App entry point.
+   */
+  public static void main(final String[] args) {
+    try {
+      String file = new String(Files.readAllBytes(Paths.get("conf/config.json")));
+      config = new AppConfig(file);
 
-		JsonObject metrics = config.getMetrics();
-		Boolean useMetrics = config.getDebug() ?  false : metrics.getBoolean("use");
-		if (!useMetrics) logger.warn("Starting in development mode - metrics will be disabled");
+      new String(Files.readAllBytes(Paths.get("api/key.txt")));
+      new String(Files.readAllBytes(Paths.get("conf/mongo.json")));
+    } catch (IOException io) {
+      logger.error("Exiting: error reading a config: " + io.getMessage());
+      return;
+    }
 
-		VertxOptions options = new VertxOptions().setMetricsOptions(
-			new MicrometerMetricsOptions()
-				.setPrometheusOptions(
-				new VertxPrometheusOptions()
-					.setEnabled(useMetrics)
-					.setStartEmbeddedServer(useMetrics)
-					.setEmbeddedServerOptions(
-					new HttpServerOptions().setHost(metrics.getString("host"))
-						.setPort(metrics.getInteger("port")))
-						.setEmbeddedServerEndpoint(metrics.getString("endpoint"))
-						.setEnabled(useMetrics))
-			.setEnabled(useMetrics));
+    JsonObject metrics = config.getMetrics();
+    Boolean useMetrics = config.getDebug() ? false : metrics.getBoolean("use");
+    if (!useMetrics) {
+      logger.warn("Starting in development mode - metrics will be disabled");
+    }
 
-		Vertx vertx = Vertx.vertx(options);
-		vertx.deployVerticle(new API())
-			.onSuccess(deploy -> logger.info("Deployed verticle"))
-			.onFailure(fail -> logger.error("Failed to deploy: " + fail.getMessage()));
-	}
+    VertxOptions options = new VertxOptions().setMetricsOptions(
+        new MicrometerMetricsOptions()
+        .setPrometheusOptions(new VertxPrometheusOptions().setEnabled(useMetrics)
+          .setStartEmbeddedServer(useMetrics)
+          .setEmbeddedServerOptions(new HttpServerOptions().setPort(8080))
+          .setEmbeddedServerEndpoint(metrics.getString("endpoint")))
+        .setEnabled(useMetrics));
 
-	public static Future<Void> init(Vertx vertx) {
-		Promise<Void> init = Promise.promise();
-		Marketplace.init(vertx, config).onSuccess(mp -> {
-			CompositeFuture.all(
-				CacheManager.init(config), 
-				Mongo.init(vertx), 
-				Scraper.init(vertx))
-			.onSuccess(cf -> init.complete())
-			.onFailure(init::fail);
-		}).onFailure(init::fail);
+    Vertx vertx = Vertx.vertx(options);
+    vertx.deployVerticle(new Api()).onSuccess(deploy -> logger.info("Deployed verticle"))
+        .onFailure(fail -> logger.error("Failed to deploy: " + fail.getMessage()));
+  }
 
-		return init.future();
-	}
+  /**
+   * Initialize components.
+   *
+   * @param vertx the <code>Vertx</code> instance to pass
+   */
+  public static Future<Void> init(final Vertx vertx) {
+    Promise<Void> init = Promise.promise();
+    Marketplace.init(vertx, config).onSuccess(mp -> {
+      CompositeFuture.all(CacheManager.init(config), Mongo.init(vertx), Scraper.init(vertx))
+          .onSuccess(cf -> init.complete()).onFailure(init::fail);
+    }).onFailure(init::fail);
 
-	@Override
-	public void start() {
-		Util.init(vertx, config).onSuccess(util -> {
-			JsonObject appConfig = config.getApp();
-			JsonObject metricsConfig = config.getMetrics();
+    return init.future();
+  }
 
-			HttpServerOptions options = new HttpServerOptions()
-				.setHost(appConfig.getString("host"))
-				.setPort(appConfig.getInteger("port"));
+  @Override
+  public final void start() {
+    Util.init(vertx, config).onSuccess(util -> {
+      JsonObject appConfig = config.getApp();
+      JsonObject metricsConfig = config.getMetrics();
 
-			HttpServer server = vertx.createHttpServer(options);
-			RouterBuilder.create(vertx, "api/OpenAPI.yaml").onComplete(builder -> {
-				RouterBuilder rb = builder.result();
-				V1.registerOperations(rb);
-				V2.registerOperations(rb);
-				Utility.registerOperations(rb);
+      HttpServerOptions options = new HttpServerOptions().setHost(appConfig.getString("host"))
+          .setPort(appConfig.getInteger("port"));
 
-				Router mainRouter = rb.createRouter();
-				mainRouter.route("/").handler(ctx -> ctx.redirect(config.getDocs()));
-				mainRouter.mountSubRouter("/scraper", Scraper.getScraperRouter());
-				mainRouter.getRoutes().forEach(Route::disable);
+      HttpServer server = vertx.createHttpServer(options);
+      RouterBuilder.create(vertx, "api/OpenAPI.yaml").onComplete(builder -> {
+        RouterBuilder rb = builder.result();
+        V1.registerOperations(rb);
+        V2.registerOperations(rb);
+        Utility.registerOperations(rb);
 
-				server.requestHandler(mainRouter).listen(srv -> {
-					if (srv.succeeded()) {
-						String running = String.format("API listening on %s:%s", 
-							appConfig.getString("host"),
-							srv.result().actualPort());
-						
-						logger.info(running);
+        Router mainRouter = rb.createRouter();
+        mainRouter.route("/").handler(ctx -> ctx.redirect(config.getDocs()));
+        mainRouter.mountSubRouter("/scraper", Scraper.getScraperRouter());
+        mainRouter.getRoutes().forEach(Route::disable);
 
-						if (srv.result().isMetricsEnabled()) {
-							String metrics = String.format("Embedded metrics available on %s:%s%s",
-								metricsConfig.getString("host"), metricsConfig.getInteger("port"),
-								metricsConfig.getString("endpoint"));
-							logger.info(metrics);
-						} else {
-							logger.warn("Metrics disabled");
-						}
+        server.requestHandler(mainRouter).listen(srv -> {
+          if (srv.succeeded()) {
+            String running = String.format("API listening on %s:%s",
+                appConfig.getString("host"),
+                srv.result().actualPort());
+            logger.info(running);
 
-						init(vertx).onSuccess(init -> {
-							mainRouter.getRoutes().forEach(Route::enable);
-							logger.info("Init done");
-						}).onFailure(fail -> {
-							logger.error("Failed to start: " + fail.getMessage());
-							server.close(done -> vertx.close());
-						});
-					} else {
-						logger.error("Failed to start:" + srv.cause().getMessage());
-						vertx.close();
-					}
-				});
-			}).onFailure(fail -> {
-				logger.error("Failed building API specification: " + fail.getMessage());
-				vertx.close();
-			});
-		}).onFailure(fail -> {
-			logger.error(fail.getMessage());
-			vertx.close();
-		});
-	}
+            if (srv.result().isMetricsEnabled()) {
+              String metrics = String.format("Embedded metrics available on %s:%s%s",
+                  metricsConfig.getString("host"),
+                  metricsConfig.getInteger("port"), metricsConfig.getString("endpoint"));
+              logger.info(metrics);
+            } else {
+              logger.warn("Metrics disabled");
+            }
+
+            init(vertx).onSuccess(init -> {
+              mainRouter.getRoutes().forEach(Route::enable);
+              logger.info("Init done");
+            }).onFailure(fail -> {
+              logger.error("Failed to start: " + fail.getMessage());
+              server.close(done -> vertx.close());
+            });
+          } else {
+            logger.error("Failed to start:" + srv.cause().getMessage());
+            vertx.close();
+          }
+        });
+      }).onFailure(fail -> {
+        logger.error("Failed building API specification: " + fail.getMessage());
+        vertx.close();
+      });
+    }).onFailure(fail -> {
+      logger.error(fail.getMessage());
+      vertx.close();
+    });
+  }
 }
