@@ -30,8 +30,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class Api extends AbstractVerticle {
-  private static Logger logger = LoggerFactory.getLogger(Api.class);
+public class API extends AbstractVerticle {
+  private static Logger logger = LoggerFactory.getLogger(API.class);
   public static AppConfig config = null;
 
   /**
@@ -64,7 +64,7 @@ public class Api extends AbstractVerticle {
         .setEnabled(useMetrics));
 
     Vertx vertx = Vertx.vertx(options);
-    vertx.deployVerticle(new Api()).onSuccess(deploy -> logger.info("Deployed verticle"))
+    vertx.deployVerticle(new API()).onSuccess(deploy -> logger.info("Deployed verticle"))
         .onFailure(fail -> logger.error("Failed to deploy: " + fail.getMessage()));
   }
 
