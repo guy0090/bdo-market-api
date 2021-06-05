@@ -2036,6 +2036,7 @@ paths:
         - v2
       parameters:
         - $ref: "#/components/parameters/region"
+        - $ref: "#/components/parameters/lang_post"
         - name: id
           in: header
           description: ID of the item
@@ -2161,6 +2162,7 @@ paths:
         - v2
       parameters:
         - $ref: "#/components/parameters/region"
+        - $ref: "#/components/parameters/lang"
         - name: id
           in: query
           description: ID of the item
