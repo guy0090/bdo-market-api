@@ -50,7 +50,6 @@ public class Utility {
       .handler(Utility::getMRecipe)
       .failureHandler(Util::handleError);
 
-
     api.operation("utilMatgroupDB")
       .handler(Utility::getRecipeMatGroup)
       .failureHandler(Util::handleError);
@@ -64,7 +63,6 @@ public class Utility {
     api.operation("postUtilMMatgroupDB")
       .handler(Utility::getMRecipeMatGroup)
       .failureHandler(Util::handleError);
-  
 
     // Full DB operations
     api.operation("utilDBDump")
@@ -145,7 +143,8 @@ public class Utility {
     ctx.response().putHeader("Content-Type", "application/json");
 
     RequestParameters params = ctx.get(ValidationHandler.REQUEST_CONTEXT_KEY);
-    RequestParameter langParam = params.queryParameter("lang");
+    RequestParameter langParam = (ctx.request().method() == HttpMethod.POST
+        ? params.headerParameter("lang") : params.queryParameter("lang"));
 
     if (langParam != null && !Util.getLangs().contains(langParam.getString())) {
       ctx.fail(456);
@@ -168,7 +167,7 @@ public class Utility {
 
     List<String>  ids = idsParam.stream()
         .map(String::valueOf)
-        .collect(Collectors.toList()); 
+        .collect(Collectors.toList());
     List<Future> db = new ArrayList<>();
     for (String id : ids) {
       UtilComposite util = new UtilComposite(lang, new JsonObject().put("id", Integer.valueOf(id)));
@@ -215,7 +214,9 @@ public class Utility {
     ctx.response().putHeader("Access-Control-Allow-Origin", "*");
     ctx.response().putHeader("Content-Type", "application/json");
     RequestParameters params = ctx.get(ValidationHandler.REQUEST_CONTEXT_KEY);
-    RequestParameter lang = params.queryParameter("lang");
+    RequestParameter lang = (ctx.request().method() == HttpMethod.POST
+        ? params.headerParameter("lang") : params.queryParameter("lang"));
+
     if (lang != null && !Util.getLangs().contains(lang.getString())) {
       ctx.fail(456);
       return;

@@ -315,7 +315,9 @@ public class V2 {
       return;
     }
 
-    String lang = Util.parseLang(params.queryParameter("lang"), region);
+    RequestParameter langParam = (ctx.request().method() == HttpMethod.POST
+        ? params.headerParameter("lang") : params.queryParameter("lang"));
+    String lang = Util.parseLang(langParam, region);
     Util.validateLang(ctx, lang);
     if (ctx.failed()) {
       return;
@@ -388,19 +390,22 @@ public class V2 {
     if (ctx.failed()) {
       return;
     }
-    
+
     JsonArray param = new JsonArray();
+    RequestParameter langParam = null;
     if (ctx.request().method() == HttpMethod.POST) {
       param = params.headerParameter("id").getJsonArray();
+      langParam = params.headerParameter("lang");
     } else {
       param = params.queryParameter("id").getJsonArray();
+      langParam = params.queryParameter("lang");
     }
 
     List<Long> ids = param.stream()
         .map(Long.class::cast)
         .collect(Collectors.toList());
 
-    String lang = Util.parseLang(params.queryParameter("lang"), region);
+    String lang = Util.parseLang(langParam, region);
     Util.validateLang(ctx, lang);
     if (ctx.failed()) {
       return;
@@ -489,17 +494,17 @@ public class V2 {
     if (ctx.failed()) {
       return;
     }
-    
+
     JsonArray idParam = new JsonArray();
     JsonArray sidParam = new JsonArray();
     if (ctx.request().method() == HttpMethod.POST) {
       idParam = params.headerParameter("id").getJsonArray();
       RequestParameter sid = params.headerParameter("sid");
-      sidParam = (sid == null ? new JsonArray().add(0L) : sid.getJsonArray());
+      sidParam = (sid == null ? new JsonArray() : sid.getJsonArray());
     } else {
       idParam = params.queryParameter("id").getJsonArray();
       RequestParameter sid = params.queryParameter("sid");
-      sidParam = (sid == null ? new JsonArray().add(0L) : sid.getJsonArray());
+      sidParam = (sid == null ? new JsonArray() : sid.getJsonArray());
     }
     List<Long> ids = idParam.stream()
         .map(Long.class::cast)

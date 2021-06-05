@@ -125,7 +125,7 @@ public class V1 {
     Future<Buffer> cacheResponse = CacheManager.getV1Cache(region)
         .get(new V1Composite(0L, 0L, region, MarketEndpoint.GetWorldMarketHotList));
 
-    cacheResponse.onSuccess(hotList -> 
+    cacheResponse.onSuccess(hotList ->
         ctx.response().end(hotList.toJsonObject().encodePrettily())
     ).onFailure(fail -> {
       ctx.fail(500);
@@ -252,7 +252,7 @@ public class V1 {
     V1Composite request = new V1Composite(ids, 0L,
         region, MarketEndpoint.GetWorldMarketSearchList);
 
-    cache.get(request).onSuccess(res -> 
+    cache.get(request).onSuccess(res ->
       ctx.response().end(res.toJsonObject().encodePrettily())
     ).onFailure(fail -> ctx.fail(500));
   }
@@ -339,17 +339,20 @@ public class V1 {
 
     Long id;
     Long sid;
+    RequestParameter langParam = null;
     if (ctx.request().method() == HttpMethod.POST) {
       id = params.headerParameter("id").getLong();
       RequestParameter sidParam = params.headerParameter("sid");
       sid = (sidParam == null ? 0L : sidParam.getLong());
+      langParam = params.headerParameter("lang");
     } else {
       id = params.queryParameter("id").getLong();
       RequestParameter sidParam = params.queryParameter("sid");
       sid = (sidParam == null ? 0L : sidParam.getLong());
+      langParam = params.queryParameter("lang");
     }
 
-    String lang = Util.parseLang(params.queryParameter("lang"), region);
+    String lang = Util.parseLang(langParam, region);
     Util.validateLang(ctx, lang);
     if (ctx.failed()) {
       return;

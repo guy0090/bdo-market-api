@@ -133,7 +133,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BasicResponseSingular" 
+                $ref: "#/components/schemas/BasicResponseSingular"
         default:
           description: Unexpected error
           content:
@@ -992,6 +992,7 @@ paths:
         - v1
       parameters:
         - $ref: "#/components/parameters/region"
+        - $ref: "#/components/parameters/lang_post"
         - name: id
           in: header
           description: ID of the item
@@ -1042,6 +1043,7 @@ paths:
         - v1
       parameters:
         - $ref: "#/components/parameters/region"
+        - $ref: "#/components/parameters/lang"
         - name: id
           in: query
           description: ID of the item
@@ -1096,6 +1098,7 @@ paths:
         - v2
       parameters:
         - $ref: "#/components/parameters/region"
+        - $ref: "#/components/parameters/lang_post"
       responses:
         "200":
           description: "Good Request: Parsed details of current hotlist items"
@@ -1166,6 +1169,7 @@ paths:
         - v2
       parameters:
         - $ref: "#/components/parameters/region"
+        - $ref: "#/components/parameters/lang"
       responses:
         "200":
           description: "Good Request: Parsed details of current hotlist items"
@@ -1348,6 +1352,7 @@ paths:
         - v2
       parameters:
         - $ref: "#/components/parameters/region"
+        - $ref: "#/components/parameters/lang_post"
         - name: id
           in: header
           description: ID of the item
@@ -1473,6 +1478,7 @@ paths:
         - v2
       parameters:
         - $ref: "#/components/parameters/region"
+        - $ref: "#/components/parameters/lang"
         - name: id
           in: query
           description: ID of the item
@@ -2559,7 +2565,7 @@ paths:
       tags:
         - util
       parameters:
-        - $ref: "#/components/parameters/lang"
+        - $ref: "#/components/parameters/lang_post"
         - name: id
           in: header
           description: ID of the item
@@ -2757,7 +2763,7 @@ paths:
       tags:
         - util
       parameters:
-        - $ref: "#/components/parameters/lang"
+        - $ref: "#/components/parameters/lang_post"
         - name: id
           in: header
           description: ID of the item
@@ -2963,7 +2969,7 @@ paths:
       tags:
         - util
       parameters:
-        - $ref: "#/components/parameters/lang"
+        - $ref: "#/components/parameters/lang_post"
         - name: id
           in: header
           description: ID of the item
@@ -3323,7 +3329,7 @@ paths:
       tags:
         - util
       parameters:
-        - $ref: "#/components/parameters/lang"
+        - $ref: "#/components/parameters/lang_post"
         - name: id
           in: header
           description: ID of the item
@@ -3485,7 +3491,7 @@ paths:
       tags:
         - util
       parameters:
-        - $ref: "#/components/parameters/lang"
+        - $ref: "#/components/parameters/lang_post"
         - name: id
           in: header
           description: ID of the item
@@ -3779,6 +3785,15 @@ components:
     lang:
       name: lang
       in: query
+      schema:
+        type: string
+        maxLength: 2
+        pattern: ^[A-Za-z]{0,2}$
+      required: false
+      description: The locale
+    lang_post:
+      name: lang
+      in: header
       schema:
         type: string
         maxLength: 2

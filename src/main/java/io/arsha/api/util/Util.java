@@ -112,8 +112,8 @@ public class Util {
    */
   public static String getItemPrefix(Long id, String minEnhance, String maxEnhance) {
     // Silver Embroidered Goes 0,1,2,3,4,5 instead of 0,PRI,DUO,TRI,TET,PEN
-    List<Long> specialCases = Arrays.asList(14025L, 14019L, 14026L, 14028L, 
-        14020L, 14022L, 14024L, 
+    List<Long> specialCases = Arrays.asList(14025L, 14019L, 14026L, 14028L,
+        14020L, 14022L, 14024L,
         14029L, 14021L, 14023L);
 
     Integer min = Integer.valueOf(minEnhance);
