@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.cache2k.Cache;
 import org.cache2k.Cache2kBuilder;
-import org.cache2k.io.CacheLoader;
 
 public class CacheManager {
   private static Map<String, Cache<V1Composite, Future<Buffer>>> v1Cache = new HashMap<>();
@@ -59,15 +58,9 @@ public class CacheManager {
       regions.forEach(entry -> {
         String region = entry.getKey();
 
-        v1Cache.put(region.toLowerCase(), new Cache2kBuilder<V1Composite, Future<Buffer>>() {
-        }.name(region.toUpperCase() + "_V1").expireAfterWrite(expire, TimeUnit.MINUTES)
-            .refreshAhead(true).entryCapacity(40000)
-            .loader(new CacheLoader<V1Composite, Future<Buffer>>() {
-              @Override
-              public Future<Buffer> load(V1Composite key) {
-                return Marketplace.request(key);
-              }
-            }).build());
+        v1Cache.put(region.toLowerCase(), new Cache2kBuilder<V1Composite, Future<Buffer>>() {}
+            .name(region.toUpperCase() + "_V1").expireAfterWrite(expire, TimeUnit.MINUTES)
+            .refreshAhead(true).entryCapacity(40000).loader(Marketplace::request).build());
       });
       cache.complete();
     });
@@ -85,37 +78,34 @@ public class CacheManager {
       regions.forEach(entry -> {
         String region = entry.getKey();
 
-        v2Cache.put(region.toLowerCase(), new Cache2kBuilder<V2Composite, Future<Buffer>>() {
-        }.name(region.toUpperCase() + "_V2").expireAfterWrite(expire, TimeUnit.MINUTES)
+        v2Cache.put(region.toLowerCase(), new Cache2kBuilder<V2Composite, Future<Buffer>>() {}
+            .name(region.toUpperCase() + "_V2").expireAfterWrite(expire, TimeUnit.MINUTES)
             .refreshAhead(true).entryCapacity(40000)
-            .loader(new CacheLoader<V2Composite, Future<Buffer>>() {
-              @Override
-              public Future<Buffer> load(V2Composite key) {
-                Future<Buffer> cached = Future.future(null);
-                switch (key.getRequestId()) {
-                  case GetWorldMarketHotList:
-                    cached = V2.getHotList(key);
-                    break;
-                  case GetWorldMarketList:
-                    cached = V2.getMarketList(key);
-                    break;
-                  case GetWorldMarketSubList:
-                    cached = V2.getSubListItem(key);
-                    break;
-                  case GetWorldMarketSearchList:
-                    cached = V2.getSearchItem(key);
-                    break;
-                  case GetBiddingInfoList:
-                    cached = V2.getBiddingList(key);
-                    break;
-                  case GetMarketPriceInfo:
-                    cached = V2.getPriceInfo(key);
-                    break;
-                  default:
-                    break;
-                }
-                return cached;
+            .loader(key -> {
+              Future<Buffer> cached = Future.future(null);
+              switch (key.getRequestId()) {
+                case GetWorldMarketHotList:
+                  cached = V2.getHotList(key);
+                  break;
+                case GetWorldMarketList:
+                  cached = V2.getMarketList(key);
+                  break;
+                case GetWorldMarketSubList:
+                  cached = V2.getSubListItem(key);
+                  break;
+                case GetWorldMarketSearchList:
+                  cached = V2.getSearchItem(key);
+                  break;
+                case GetBiddingInfoList:
+                  cached = V2.getBiddingList(key);
+                  break;
+                case GetMarketPriceInfo:
+                  cached = V2.getPriceInfo(key);
+                  break;
+                default:
+                  break;
               }
+              return cached;
             }).build());
       });
       cache.complete();
@@ -130,19 +120,16 @@ public class CacheManager {
   */
   public static Future<Void> createDbCache(Integer expire) {
     return Future.future(cache -> {
-      itemDBCache = new Cache2kBuilder<UtilComposite, Future<JsonObject>>() {
-      }.name("ITEM_DB").expireAfterWrite(expire, TimeUnit.MINUTES)
-      .refreshAhead(true).entryCapacity(40000)
-      .loader(new CacheLoader<UtilComposite, Future<JsonObject>>() {
-        @Override
-        public Future<JsonObject> load(UtilComposite key) {
+      itemDBCache = new Cache2kBuilder<UtilComposite, Future<JsonObject>>() {}
+        .name("ITEM_DB").expireAfterWrite(expire, TimeUnit.MINUTES)
+        .refreshAhead(true).entryCapacity(40000)
+        .loader(key -> {
           if (key.getCollection().contains("recipe")) {
             return Mongo.getRecipe(key.getCollection(), key.getQuery());
           } else {
             return Mongo.getItem(key.getCollection(), key.getQuery());
           }
-        }
-      }).build();
+        }).build();
       cache.complete();
     });
   }
@@ -155,18 +142,15 @@ public class CacheManager {
   */
   public static Future<Void> createFullDbCache(Integer expire) {
     return Future.future(cache -> {
-      fullDBCache = new Cache2kBuilder<UtilComposite, Future<List<JsonObject>>>() {
-      }.name("FULL_ITEM_DB").expireAfterWrite(expire, TimeUnit.MINUTES).entryCapacity(20)
-      .loader(new CacheLoader<UtilComposite, Future<List<JsonObject>>>() {
-        @Override
-        public Future<List<JsonObject>> load(UtilComposite key) {
+      fullDBCache = new Cache2kBuilder<UtilComposite, Future<List<JsonObject>>>() {}
+        .name("FULL_ITEM_DB").expireAfterWrite(expire, TimeUnit.MINUTES).entryCapacity(20)
+        .loader(key -> {
           if (key.getCollection().contains("recipe")) {
             return Mongo.getRecipeClient().find(key.getCollection(), key.getQuery());
           } else {
             return Mongo.getItemClient().find(key.getCollection(), key.getQuery());
           }
-        }
-      }).build();
+        }).build();
       cache.complete();
     });
   }

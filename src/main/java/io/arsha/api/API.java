@@ -64,8 +64,9 @@ public class API extends AbstractVerticle {
         .setEnabled(useMetrics));
 
     Vertx vertx = Vertx.vertx(options);
-    vertx.deployVerticle(new API()).onSuccess(deploy -> logger.info("Deployed verticle"))
-        .onFailure(fail -> logger.error("Failed to deploy: " + fail.getMessage()));
+    vertx.deployVerticle(new API())
+      .onSuccess(deploy -> logger.info("Deployed verticle"))
+      .onFailure(fail -> logger.error("Failed to deploy: " + fail.getMessage()));
   }
 
   /**
@@ -76,8 +77,12 @@ public class API extends AbstractVerticle {
   public static Future<Void> init(final Vertx vertx) {
     Promise<Void> init = Promise.promise();
     Marketplace.init(vertx, config).onSuccess(mp -> {
-      CompositeFuture.all(CacheManager.init(config), Mongo.init(vertx), Scraper.init(vertx))
-          .onSuccess(cf -> init.complete()).onFailure(init::fail);
+      CompositeFuture.all(
+        CacheManager.init(config),
+        Mongo.init(vertx),
+        Scraper.init(vertx)
+      ).onSuccess(cf -> init.complete()
+      ).onFailure(init::fail);
     }).onFailure(init::fail);
 
     return init.future();
@@ -89,7 +94,8 @@ public class API extends AbstractVerticle {
       JsonObject appConfig = config.getApp();
       JsonObject metricsConfig = config.getMetrics();
 
-      HttpServerOptions options = new HttpServerOptions().setHost(appConfig.getString("host"))
+      HttpServerOptions options = new HttpServerOptions()
+          .setHost(appConfig.getString("host"))
           .setPort(appConfig.getInteger("port"));
 
       HttpServer server = vertx.createHttpServer(options);
@@ -114,7 +120,8 @@ public class API extends AbstractVerticle {
             if (srv.result().isMetricsEnabled()) {
               String metrics = String.format("Embedded metrics available on %s:%s%s",
                   metricsConfig.getString("host"),
-                  metricsConfig.getInteger("port"), metricsConfig.getString("endpoint"));
+                  metricsConfig.getInteger("port"),
+                  metricsConfig.getString("endpoint"));
               logger.info(metrics);
             } else {
               logger.warn("Metrics disabled");

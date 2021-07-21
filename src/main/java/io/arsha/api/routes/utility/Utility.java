@@ -165,7 +165,7 @@ public class Utility {
       idsParam = params.queryParameter("id").getJsonArray();
     }
 
-    List<String>  ids = idsParam.stream()
+    List<String> ids = idsParam.stream()
         .map(String::valueOf)
         .collect(Collectors.toList());
     List<Future> db = new ArrayList<>();

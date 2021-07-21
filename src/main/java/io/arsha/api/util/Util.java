@@ -233,6 +233,8 @@ public class Util {
    * @param ctx the <code>RoutingContext</code>
    */
   public static void handleError(RoutingContext ctx) {
+    ctx.response().putHeader("Content-Type", "application/json");
+
     String id = UUID.randomUUID().toString();
     JsonObject error = new JsonObject();
     Integer code = ctx.statusCode();
@@ -256,7 +258,8 @@ public class Util {
         error.put("error", code).put("message", "Invalid region");
         break;
       case 454: // Custom unequal id/sid
-        error.put("error", code).put("message", "Invalid arguments: There must be an SID for every ID given");
+        error.put("error", code).put("message",
+            "Invalid arguments: There must be an SID for every ID given");
         break;
       case 455: // Custom multiple id not allowed
         error.put("error", code).put("message",
