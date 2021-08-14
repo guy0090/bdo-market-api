@@ -78,7 +78,7 @@ paths:
         - name: subCategory
           in: header
           description: ID of sub category
-          required: false
+          required: true
           schema:
             type: integer
             format: int32
@@ -118,7 +118,7 @@ paths:
         - name: subCategory
           in: query
           description: ID of sub category
-          required: false
+          required: true
           schema:
             type: integer
             format: int32
@@ -1251,7 +1251,7 @@ paths:
         - name: subCategory
           in: header
           description: ID of sub category
-          required: false
+          required: true
           schema:
             type: integer
             format: int32
@@ -1306,7 +1306,7 @@ paths:
         - name: subCategory
           in: query
           description: ID of sub category
-          required: false
+          required: true
           schema:
             type: integer
             format: int32

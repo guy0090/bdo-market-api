@@ -62,10 +62,10 @@ public class Marketplace {
 
     Promise<Buffer> response = Promise.promise();
     client.post(443, url, "/Trademarket/" + endpoint)
-    .expect(ResponsePredicate.JSON)
-    .sendJsonObject(body).onSuccess(res ->
-    response.complete(res.body())
-    ).onFailure(response::fail);
+        .expect(ResponsePredicate.JSON)
+        .sendJsonObject(body)
+        .onSuccess(res -> response.complete(res.body()))
+        .onFailure(response::fail);
 
     return response.future();
   }

@@ -152,12 +152,10 @@ public class V1 {
     Long subCategory;
     if (ctx.request().method() == HttpMethod.POST) {
       mainCategory = params.headerParameter("mainCategory").getLong();
-      RequestParameter subC = params.headerParameter("subCategory");
-      subCategory = (subC == null ? 0L : subC.getLong());
+      subCategory = params.headerParameter("subCategory").getLong();
     } else {
       mainCategory = params.queryParameter("mainCategory").getLong();
-      RequestParameter subC = params.queryParameter("subCategory");
-      subCategory = (subC == null ? 0L : subC.getLong());
+      subCategory = params.queryParameter("subCategory").getLong();
     }
 
     V1Composite request = new V1Composite(mainCategory, subCategory,

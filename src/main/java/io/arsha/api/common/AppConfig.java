@@ -31,10 +31,6 @@ public class AppConfig {
     return this.debug;
   }
 
-  public Boolean getDebug() {
-    return this.debug;
-  }
-
   public void setDebug(Boolean debug) {
     this.debug = debug;
   }

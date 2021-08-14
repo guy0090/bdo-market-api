@@ -50,18 +50,21 @@ public class API extends AbstractVerticle {
     }
 
     JsonObject metrics = config.getMetrics();
-    Boolean useMetrics = config.getDebug() ? false : metrics.getBoolean("use");
+    Boolean useMetrics = config.isDebug() ? false : metrics.getBoolean("use");
     if (!useMetrics) {
       logger.warn("Starting in development mode - metrics will be disabled");
     }
 
-    VertxOptions options = new VertxOptions().setMetricsOptions(
-        new MicrometerMetricsOptions()
-        .setPrometheusOptions(new VertxPrometheusOptions().setEnabled(useMetrics)
-          .setStartEmbeddedServer(useMetrics)
-          .setEmbeddedServerOptions(new HttpServerOptions().setPort(metrics.getInteger("port")))
-          .setEmbeddedServerEndpoint(metrics.getString("endpoint")))
-        .setEnabled(useMetrics));
+    VertxPrometheusOptions prometheusOptions = new VertxPrometheusOptions()
+        .setEnabled(useMetrics)
+        .setStartEmbeddedServer(useMetrics)
+        .setEmbeddedServerOptions(
+          new HttpServerOptions().setPort(metrics.getInteger("port")))
+        .setEmbeddedServerEndpoint(metrics.getString("endpoint"));
+    MicrometerMetricsOptions mmOptions = new MicrometerMetricsOptions()
+        .setPrometheusOptions(prometheusOptions)
+        .setEnabled(useMetrics);
+    VertxOptions options = new VertxOptions().setMetricsOptions(mmOptions);
 
     Vertx vertx = Vertx.vertx(options);
     vertx.deployVerticle(new API())

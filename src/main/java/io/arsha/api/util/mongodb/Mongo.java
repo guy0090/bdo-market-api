@@ -95,7 +95,7 @@ public class Mongo {
   * Get an entry in an item collection.
   *
   * @param collection the collection to query
-  * @param doc        the query to check again
+  * @param doc        the query to check against
   * @return           <code>Future</code> with result
   *                   <code>JsonObject</code> if found otherwise null
   */
@@ -118,7 +118,7 @@ public class Mongo {
   * Get an entry in a recipe collection.
   *
   * @param collection the collection to query
-  * @param doc        the query to check again
+  * @param doc        the query to check against
   * @return           <code>Future</code> with result
                       <code>JsonObject</code> if found otherwise null
   */
