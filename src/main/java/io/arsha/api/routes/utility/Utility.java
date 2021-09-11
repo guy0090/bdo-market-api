@@ -6,6 +6,8 @@ import io.arsha.api.util.Util;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.core.impl.logging.Logger;
+import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
@@ -21,6 +23,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Utility {
+  private static Logger logger = LoggerFactory.getLogger(Utility.class);
 
   /**
    * Register Util operations.
@@ -192,8 +195,10 @@ public class Utility {
         ctx.fail(452);
       } else if (items.size() > 1) {
         ctx.response().end(items.encodePrettily());
+        logger.info(Util.formatLog(ctx.request()));
       } else {
-        ctx.response().send(items.getJsonObject(0).encodePrettily());
+        ctx.response().end(items.getJsonObject(0).encodePrettily());
+        logger.info(Util.formatLog(ctx.request()));
       }
     }).onFailure(fail -> ctx.fail(513));
   }
@@ -251,7 +256,8 @@ public class Utility {
         for (JsonObject item : localeDB) {
           item.remove("_id");
         }
-        ctx.response().send(new JsonArray(localeDB).encode());
+        ctx.response().end(new JsonArray(localeDB).encode());
+        logger.info(Util.formatLog(ctx.request()));
       }).onFailure(fail -> ctx.fail(512));
     }
   }

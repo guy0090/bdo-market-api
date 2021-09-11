@@ -17,6 +17,8 @@ import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.core.impl.logging.Logger;
+import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
@@ -34,6 +36,8 @@ import org.cache2k.Cache;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class V2 {
+  private static Logger logger = LoggerFactory.getLogger(V2.class);
+
   /**
    * Register V2 operations.
    *
@@ -332,6 +336,7 @@ public class V2 {
       } else {
         ctx.response().end(list.toJsonArray().encodePrettily());
       }
+      logger.info(Util.formatLog(ctx.request()));
     }).onFailure(fail -> ctx.fail(500));
   }
 
@@ -370,6 +375,7 @@ public class V2 {
       } else {
         ctx.response().end(list.toJsonArray().encodePrettily());
       }
+      logger.info(Util.formatLog(ctx.request()));
     }).onFailure(fail -> ctx.fail(500));
   }
 
@@ -427,6 +433,7 @@ public class V2 {
       } else {
         ctx.response().end(res.encodePrettily());
       }
+      logger.info(Util.formatLog(ctx.request()));
     }).onFailure(fail -> ctx.fail(500));
   }
 
@@ -474,6 +481,7 @@ public class V2 {
       } else {
         ctx.response().end(res.encodePrettily());
       }
+      logger.info(Util.formatLog(ctx.request()));
     }).onFailure(fail -> ctx.fail(500));
   }
 
@@ -535,6 +543,7 @@ public class V2 {
       } else {
         ctx.response().end(items.encodePrettily());
       }
+      logger.info(Util.formatLog(ctx.request()));
     }).onFailure(fail -> ctx.fail(500));
   }
 

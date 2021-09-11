@@ -67,7 +67,7 @@ public class CacheManager {
   }
 
   /**
-  * Create cache for V1 requests.
+  * Create cache for V2 requests.
   *
   * @param expire the time to expire values
   * @return <code>Future&lt;Void&gt;</code>
@@ -113,7 +113,7 @@ public class CacheManager {
   }
 
   /**
-  * Create cache for V1 requests.
+  * Create cache for utility requests.
   *
   * @param expire the time to expire values
   * @return <code>Future&lt;Void&gt;</code>
@@ -135,7 +135,7 @@ public class CacheManager {
   }
 
   /**
-  * Create cache for V1 requests.
+  * Create cache for full db requests.
   *
   * @param expire the time to expire values
   * @return <code>Future&lt;Void&gt;</code>

@@ -9,6 +9,8 @@ import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.core.impl.logging.Logger;
+import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.core.json.DecodeException;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -28,6 +30,8 @@ import org.cache2k.Cache;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class V1 {
+  private static Logger logger = LoggerFactory.getLogger(V1.class);
+
   /**
    *  Register V1 operations.
    *
@@ -125,11 +129,12 @@ public class V1 {
     Future<Buffer> cacheResponse = CacheManager.getV1Cache(region)
         .get(new V1Composite(0L, 0L, region, MarketEndpoint.GetWorldMarketHotList));
 
-    cacheResponse.onSuccess(hotList ->
-        ctx.response().end(hotList.toJsonObject().encodePrettily())
-    ).onFailure(fail -> {
-      ctx.fail(500);
-    });
+    cacheResponse.onSuccess(hotList -> {
+      logger.info(Util.formatLog(ctx.request()));
+      ctx.response().end(hotList.toJsonObject().encodePrettily());
+    }).onFailure(fail ->
+        ctx.fail(500)
+    );
   }
 
   /**
@@ -164,6 +169,7 @@ public class V1 {
 
     cacheResponse.onSuccess(marketList -> {
       try {
+        logger.info(Util.formatLog(ctx.request()));
         ctx.response().end(marketList.toJsonObject().encodePrettily());
       } catch (DecodeException json) {
         json.printStackTrace();
@@ -220,6 +226,7 @@ public class V1 {
       } else {
         ctx.response().end(items.encodePrettily());
       }
+      logger.info(Util.formatLog(ctx.request()));
     }).onFailure(fail -> ctx.fail(500));
   }
 
@@ -250,9 +257,10 @@ public class V1 {
     V1Composite request = new V1Composite(ids, 0L,
         region, MarketEndpoint.GetWorldMarketSearchList);
 
-    cache.get(request).onSuccess(res ->
-      ctx.response().end(res.toJsonObject().encodePrettily())
-    ).onFailure(fail -> ctx.fail(500));
+    cache.get(request).onSuccess(res -> {
+      logger.info(Util.formatLog(ctx.request()));
+      ctx.response().end(res.toJsonObject().encodePrettily());
+    }).onFailure(fail -> ctx.fail(500));
   }
 
   /**
@@ -317,6 +325,7 @@ public class V1 {
       } else {
         ctx.response().end(items.encodePrettily());
       }
+      logger.info(Util.formatLog(ctx.request()));
     }).onFailure(fail -> ctx.fail(500));
   }
 
@@ -385,6 +394,7 @@ public class V1 {
             .put("sid", price.getInteger("sid"))
             .put("basePrice", price.getLong("basePrice"))
             .put("icon", price.getString("icon")).encodePrettily());
+        logger.info(Util.formatLog(ctx.request()));
       } else {
         ctx.fail(458);
       }

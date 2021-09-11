@@ -5,9 +5,11 @@ import io.arsha.api.market.Marketplace;
 import io.arsha.api.market.items.History;
 import io.arsha.api.market.items.Item;
 import io.vertx.core.Future;
+import io.vertx.core.MultiMap;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.core.json.JsonObject;
@@ -16,9 +18,11 @@ import io.vertx.ext.web.validation.RequestParameter;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -361,4 +365,56 @@ public class Util {
     ctx.fail(456);
   }
 
+  /**
+   * Formats <code>HttpServerRequest</code> into log.
+   *
+   * @param request The <code>HttpServerRequest</code>
+   * @return
+   */
+  public static String formatLog(HttpServerRequest request) {
+    List<String> validHeaders = Arrays.asList(
+        "id", "sid", "ids", "mainCategory", "subCategory", "lang");
+    String method = request.method().name();
+    String path = request.path();
+    String query = (request.query() == null ? "null" : request.query());
+    MultiMap headers = request.headers();
+    List<String> params = new ArrayList<>();
+
+    if (method.equalsIgnoreCase("GET")) {
+      params = Arrays.asList(query.split("[&]"));
+    } else {
+      for (Entry<String, String> entry : headers) {
+        String key = entry.getKey();
+        if (!validHeaders.contains(key)) {
+          continue;
+        }
+
+        String val = entry.getValue();
+        params.add(String.format("%s=%s", key, val));
+      }
+      if (params.size() == 0) {
+        params.add("null");
+      }
+    }
+
+    String[] parts = path.split("[/]");
+
+    String version = parts[1];
+    if (version.equalsIgnoreCase("util")) {
+      return String.format("METHOD=%s;UTIL=TRUE;ENDPOINT=%s;QUERY=%s;",
+          method,
+          (parts.length <= 3 ? parts[2] : parts[2] + "/" + parts[3]),
+          String.join(";", params)
+      );
+    }
+
+
+    return String.format("METHOD=%s;API_VERSION=%s;REGION=%s;ENDPOINT=%s;QUERY=%s;",
+        method,
+        version.toUpperCase(),
+        path.split("[/]")[2].toUpperCase(),
+        path.split("[/]")[3],
+        String.join(";", params)
+    );
+  }
 }
