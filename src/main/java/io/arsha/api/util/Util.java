@@ -400,21 +400,23 @@ public class Util {
     String[] parts = path.split("[/]");
 
     String version = parts[1];
+    // String log = "";
     if (version.equalsIgnoreCase("util")) {
-      return String.format("METHOD=%s;UTIL=TRUE;ENDPOINT=%s;QUERY=%s;",
-          method,
-          (parts.length <= 3 ? parts[2] : parts[2] + "/" + parts[3]),
-          String.join(";", params)
-      );
+      return new JsonObject()
+        .put("METHOD", method)
+        .put("UTIL", true)
+        .put("ENDPOINT", (parts.length <= 3 ? parts[2] : parts[2] + "/" + parts[3]))
+        .put("QUERY", String.join(";", params))
+        .encode();
     }
 
-
-    return String.format("METHOD=%s;API_VERSION=%s;REGION=%s;ENDPOINT=%s;QUERY=%s;",
-        method,
-        version.toUpperCase(),
-        path.split("[/]")[2].toUpperCase(),
-        path.split("[/]")[3],
-        String.join(";", params)
-    );
+    return new JsonObject()
+      .put("METHOD", method)
+      .put("UTIL", false)
+      .put("API_VERSION", version.toUpperCase())
+      .put("REGION", path.split("[/]")[2].toUpperCase())
+      .put("ENDPOINT", path.split("[/]")[3])
+      .put("QUERY", String.join(";", params))
+      .encode();
   }
 }
