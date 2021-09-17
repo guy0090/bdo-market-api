@@ -4,6 +4,7 @@ import io.arsha.api.cache.CacheManager;
 import io.arsha.api.cache.UtilComposite;
 import io.arsha.api.cache.V1Composite;
 import io.arsha.api.cache.V2Composite;
+import io.arsha.api.market.Marketplace;
 import io.arsha.api.market.enums.MarketEndpoint;
 import io.arsha.api.market.items.History;
 import io.arsha.api.market.items.HotListItem;
@@ -11,6 +12,7 @@ import io.arsha.api.market.items.Item;
 import io.arsha.api.market.items.ListItem;
 import io.arsha.api.market.items.Order;
 import io.arsha.api.market.items.SearchItem;
+import io.arsha.api.market.items.WaitListItem;
 import io.arsha.api.util.Util;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
@@ -44,6 +46,13 @@ public class V2 {
    * @param api the <code>RouterBuilder</code> from OpenAPI specification
    */
   public static void registerOperations(RouterBuilder api) {
+    api.operation("v2WaitList")
+      .handler(V2::getWorldMarketWaitList)
+      .failureHandler(Util::handleError);
+    api.operation("v2PostWaitList")
+      .handler(V2::getWorldMarketWaitList)
+      .failureHandler(Util::handleError);
+
     api.operation("v2HotList")
       .handler(V2::getWorldMarketHotList)
       .failureHandler(Util::handleError);
@@ -110,6 +119,56 @@ public class V2 {
   }
 
   /**
+  * Get current wait list.
+  * Due to frequent wait list changes, this endpoint is not cached.
+  *
+  * @param request the <code>V2Composite</code> composite key
+  * @return        <code>Future&lt;Buffer&gt;</code> of the list to grab
+  */
+  public static Future<Buffer> getWaitList(V2Composite request) {
+    Promise<Buffer> response = Promise.promise();
+    Future<Buffer> waitList = Marketplace.request(request);
+
+    waitList.onSuccess(list -> {
+      List<Future> dbFutures = new ArrayList<>();
+      List<WaitListItem> waitListItems = new ArrayList<>();
+      JsonObject res = waitList.result().toJsonObject();
+      if (res.getString("resultMsg").equals("0")) {
+        response.fail("515");
+        return;
+      }
+      for (String subItem : res.getString("resultMsg").split("[|]")) {
+        WaitListItem i = new WaitListItem(subItem.split("[-]"));
+        waitListItems.add(i);
+        UtilComposite util = new UtilComposite(
+            request.getLang(),
+            new JsonObject().put("id", i.getId())
+        );
+        dbFutures.add(CacheManager.getDbCache().get(util));
+      }
+
+      CompositeFuture.all(dbFutures).onSuccess(cf -> {
+        JsonArray items = new JsonArray();
+        for (int i = 0; i < waitListItems.size(); i++) {
+          JsonObject dbItem = (JsonObject) dbFutures.get(i).result();
+          WaitListItem item = waitListItems.get(i);
+          String prefix = Util.getItemPrefix(
+              item.getId(),
+              String.valueOf(item.getSid()),
+              String.valueOf(item.getSid())
+          );
+
+          item.setName(prefix + dbItem.getString("name"));
+          items.add(item.toJson());
+        }
+        response.complete(items.toBuffer());
+      }).onFailure(response::fail);
+    });
+
+    return response.future();
+  }
+
+  /**
   * Get current hot list.
   *
   * @param request the <code>V2Composite</code> composite key
@@ -126,8 +185,10 @@ public class V2 {
       for (String subItem : res.getString("resultMsg").split("[|]")) {
         HotListItem i = new HotListItem(subItem.split("[-]"));
         hotlistItems.add(i);
-        UtilComposite util = new UtilComposite(request.getLang(),
-            new JsonObject().put("id", i.getId()));
+        UtilComposite util = new UtilComposite(
+            request.getLang(),
+            new JsonObject().put("id", i.getId())
+        );
         dbFutures.add(CacheManager.getDbCache().get(util));
       }
 
@@ -301,6 +362,49 @@ public class V2 {
     }).onFailure(response::fail);
 
     return response.future();
+  }
+
+  /**
+   * GetWorldMarketWaitList.
+   *
+   * @param ctx the <code>RoutingContext</code>
+   */
+  private static void getWorldMarketWaitList(RoutingContext ctx) {
+    ctx.response().putHeader("Access-Control-Allow-Origin", "*");
+    ctx.response().putHeader("Content-Type", "application/json");
+
+    RequestParameters params = ctx.get(ValidationHandler.REQUEST_CONTEXT_KEY);
+    String region = params.pathParameter("region").getString();
+    Util.validateRegion(ctx, region);
+    if (ctx.failed()) {
+      return;
+    }
+
+    RequestParameter langParam = (ctx.request().method() == HttpMethod.POST
+        ? params.headerParameter("lang") : params.queryParameter("lang"));
+    String lang = Util.parseLang(langParam, region);
+    Util.validateLang(ctx, lang);
+    if (ctx.failed()) {
+      return;
+    }
+
+    V2Composite request = new V2Composite(0L, 0L,
+        region, MarketEndpoint.GetWorldMarketWaitList, lang);
+    Future<Buffer> waitlist = V2.getWaitList(request);
+    waitlist.onSuccess(list -> {
+      if (list.toJsonArray().size() == 1) {
+        ctx.response().end(list.toJsonArray().getJsonObject(0).encodePrettily());
+      } else {
+        ctx.response().end(list.toJsonArray().encodePrettily());
+      }
+      logger.info(Util.formatLog(ctx.request()));
+    }).onFailure(fail -> {
+      if (fail.getMessage().equals("515")) {
+        ctx.fail(515);
+      } else {
+        ctx.fail(500);
+      }
+    });
   }
 
   /**

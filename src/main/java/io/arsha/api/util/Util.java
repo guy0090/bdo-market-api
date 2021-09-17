@@ -16,8 +16,11 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.validation.RequestParameter;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -76,6 +79,22 @@ public class Util {
     }
     h.setParsed(res);
     return h;
+  }
+
+  /**
+   * Get time until wait list item is available.
+   *
+   * @param epoch The epoch when an item is availble.
+   * @return Minutes until item is buyable
+   */
+  public static Long getAvailableTime(Long epoch) {
+    LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+    Instant available = Instant.ofEpochSecond(epoch);
+    Long diff = ChronoUnit.MINUTES.between(
+        now,
+        ZonedDateTime.ofInstant(available, ZoneOffset.UTC)
+    );
+    return diff;
   }
 
   /**
@@ -289,6 +308,9 @@ public class Util {
         break;
       case 514: // Custom bad response from market
         error.put("error", code).put("message", "Web market did not respond");
+        break;
+      case 515: // Custom wait list is empty
+        error.put("error", code).put("message", "Wait list is empty");
         break;
       default:
         error.put("error", code).put("message", "Unexpected error occurred");

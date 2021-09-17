@@ -6,6 +6,59 @@ servers:
   - url: "http://localhost:1717/"
   - url: 'https://api.arsha.io/'
 paths:
+  /v1/{region}/GetWorldMarketWaitList:
+    post:
+      security: []
+      summary: "GetWorldMarketWaitList: Returns details of current waitlist items"
+      operationId: v1PostWaitList
+      tags:
+        - v1
+      parameters:
+        - $ref: "#/components/parameters/region"
+      responses:
+        "200":
+          description: "Good Request: Details of current waitlist items"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResponseSingular"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    get:
+      security: []
+      summary: "GetWorldMarketHotList: Returns details of current waitlist items"
+      operationId: v1WaitList
+      tags:
+        - v1
+      parameters:
+        - $ref: "#/components/parameters/region"
+      responses:
+        "200":
+          description: "Good Request: Details of current waitlist items"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResponseSingular"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /v1/{region}/GetWorldMarketHotList:
     post:
       security: []
@@ -1088,7 +1141,97 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-
+  /v2/{region}/GetWorldMarketWaitList:
+    post:
+      security: []
+      summary: "GetWorldMarketHotList: Returns parsed details of current waitlist items"
+      operationId: v2PostWaitList
+      tags:
+        - v2
+      parameters:
+        - $ref: "#/components/parameters/region"
+        - $ref: "#/components/parameters/lang_post"
+      responses:
+        "200":
+          description: "Good Request: Parsed details of current waitlist items"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    id:
+                      type: integer
+                      format: int32
+                    subId:
+                      type: integer
+                      format: int32
+                    price:
+                      type: integer
+                      format: int32
+                    registered:
+                      type: string
+                    icon:
+                      type: string
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    get:
+      security: []
+      summary: "GetWorldMarketWaitList: Returns parsed details of current waitlist items"
+      operationId: v2WaitList
+      tags:
+        - v2
+      parameters:
+        - $ref: "#/components/parameters/region"
+        - $ref: "#/components/parameters/lang"
+      responses:
+        "200":
+          description: "Good Request: Parsed details of current waitlist items"
+          headers:
+            Access-Control-Allow-Origin:
+              description: Allowed origins
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    id:
+                      type: integer
+                      format: int32
+                    subId:
+                      type: integer
+                      format: int32
+                    price:
+                      type: integer
+                      format: int32
+                    registered:
+                      type: string
+                    icon:
+                      type: string
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /v2/{region}/GetWorldMarketHotList:
     post:
       security: []

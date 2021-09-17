@@ -3,6 +3,7 @@ package io.arsha.api.routes.v1;
 import io.arsha.api.cache.CacheManager;
 import io.arsha.api.cache.V1Composite;
 import io.arsha.api.cache.V2Composite;
+import io.arsha.api.market.Marketplace;
 import io.arsha.api.market.enums.MarketEndpoint;
 import io.arsha.api.util.Util;
 import io.vertx.core.CompositeFuture;
@@ -38,6 +39,13 @@ public class V1 {
    * @param api the <code>RouterBuilder</code> from OpenAPI specification
    */
   public static void registerOperations(RouterBuilder api) {
+    api.operation("v1WaitList")
+      .handler(V1::getWorldMarketWaitList)
+      .failureHandler(Util::handleError);
+    api.operation("v1PostWaitList")
+      .handler(V1::getWorldMarketWaitList)
+      .failureHandler(Util::handleError);
+
     api.operation("v1HotList")
       .handler(V1::getWorldMarketHotList)
       .failureHandler(Util::handleError);
@@ -109,6 +117,34 @@ public class V1 {
     api.operation("v1PostAliasHistory")
       .handler(ctx -> getBiddingOrPriceInfo(ctx, MarketEndpoint.GetMarketPriceInfo))
       .failureHandler(Util::handleError);
+  }
+
+  /**
+   * GetWorldMarketWaitList
+   * Due to frequent wait list changes, this endpoint is not cached.
+   *
+   * @param ctx the <code>RoutingContext</code>
+   */
+  private static void getWorldMarketWaitList(RoutingContext ctx) {
+    ctx.response().putHeader("Access-Control-Allow-Origin", "*");
+    ctx.response().putHeader("Content-Type", "application/json");
+
+    String region = ctx.request().getParam("region");
+    Util.validateRegion(ctx, region);
+    if (ctx.failed()) {
+      return;
+    }
+
+    Future<Buffer> marketResponse = Marketplace.request(
+        new V1Composite(0L, 0L, region, MarketEndpoint.GetWorldMarketWaitList)
+    );
+
+    marketResponse.onSuccess(waitList -> {
+      logger.info(Util.formatLog(ctx.request()));
+      ctx.response().end(waitList.toJsonObject().encodePrettily());
+    }).onFailure(fail ->
+        ctx.fail(500)
+    );
   }
 
   /**

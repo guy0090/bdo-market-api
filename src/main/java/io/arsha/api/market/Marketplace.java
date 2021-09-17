@@ -86,6 +86,7 @@ public class Marketplace {
     JsonObject requestBody = new JsonObject();
 
     switch (requestId) {
+      case GetWorldMarketWaitList:
       case GetWorldMarketHotList:
         requestBody = null;
         break;

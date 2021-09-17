@@ -7,4 +7,5 @@ public enum MarketEndpoint {
   GetWorldMarketSearchList,
   GetBiddingInfoList,
   GetMarketPriceInfo,
+  GetWorldMarketWaitList
 }
