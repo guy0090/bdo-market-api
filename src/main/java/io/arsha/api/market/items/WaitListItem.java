@@ -76,7 +76,8 @@ public class WaitListItem {
         .put("id", id)
         .put("subId", sid)
         .put("price", price)
-        .put("availableIn", Util.getAvailableTime(available));
+        .put("liveAt", available);
+        // .put("availableIn", Util.getAvailableTime(available));
     return json;
   }
 
