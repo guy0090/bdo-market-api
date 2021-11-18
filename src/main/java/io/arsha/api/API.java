@@ -11,6 +11,7 @@ import io.arsha.api.util.Util;
 import io.arsha.api.util.mongodb.Mongo;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.CompositeFuture;
+import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
@@ -55,6 +56,7 @@ public class API extends AbstractVerticle {
       logger.warn("Starting in development mode - metrics will be disabled");
     }
 
+
     VertxPrometheusOptions prometheusOptions = new VertxPrometheusOptions()
         .setEnabled(useMetrics)
         .setStartEmbeddedServer(useMetrics)
@@ -67,7 +69,8 @@ public class API extends AbstractVerticle {
     VertxOptions options = new VertxOptions().setMetricsOptions(mmOptions);
 
     Vertx vertx = Vertx.vertx(options);
-    vertx.deployVerticle(new API())
+    DeploymentOptions deploymentOptions = new DeploymentOptions().setInstances(Runtime.getRuntime().availableProcessors());
+    vertx.deployVerticle(API.class.getName(), deploymentOptions)
       .onSuccess(deploy -> logger.info("Deployed verticle"))
       .onFailure(fail -> logger.error("Failed to deploy: " + fail.getMessage()));
   }
@@ -99,7 +102,9 @@ public class API extends AbstractVerticle {
 
       HttpServerOptions options = new HttpServerOptions()
           .setHost(appConfig.getString("host"))
-          .setPort(appConfig.getInteger("port"));
+          .setPort(appConfig.getInteger("port"))
+          .setCompressionSupported(true)
+          .setCompressionLevel(9);
 
       HttpServer server = vertx.createHttpServer(options);
       RouterBuilder.create(vertx, "api/OpenAPI.yaml").onComplete(builder -> {

@@ -46,19 +46,19 @@ public class V1 {
       .handler(V1::getWorldMarketWaitList)
       .failureHandler(Util::handleError);
 
-    api.operation("v1HotList")
-      .handler(V1::getWorldMarketHotList)
-      .failureHandler(Util::handleError);
-    api.operation("v1PostHotList")
-      .handler(V1::getWorldMarketHotList)
-      .failureHandler(Util::handleError);
+    // api.operation("v1HotList")
+    //   .handler(V1::getWorldMarketHotList)
+    //   .failureHandler(Util::handleError);
+    // api.operation("v1PostHotList")
+    //   .handler(V1::getWorldMarketHotList)
+    //   .failureHandler(Util::handleError);
 
-    api.operation("v1MarketList")
-      .handler(V1::getWorldMarketList)
-      .failureHandler(Util::handleError);
-    api.operation("v1PostMarketList")
-      .handler(V1::getWorldMarketList)
-      .failureHandler(Util::handleError);
+    // api.operation("v1MarketList")
+    //   .handler(V1::getWorldMarketList)
+    //   .failureHandler(Util::handleError);
+    // api.operation("v1PostMarketList")
+    //   .handler(V1::getWorldMarketList)
+    //   .failureHandler(Util::handleError);
 
     api.operation("v1MarketSubList")
       .handler(V1::getWorldMarketSubList)
@@ -74,12 +74,12 @@ public class V1 {
       .handler(V1::getWorldMarketSearchList)
       .failureHandler(Util::handleError);
 
-    api.operation("v1MarketBiddingList")
-      .handler(ctx -> getBiddingOrPriceInfo(ctx, MarketEndpoint.GetBiddingInfoList))
-      .failureHandler(Util::handleError);
-    api.operation("v1PostMarketBiddingList")
-      .handler(ctx -> getBiddingOrPriceInfo(ctx, MarketEndpoint.GetBiddingInfoList))
-      .failureHandler(Util::handleError);
+    // api.operation("v1MarketBiddingList")
+    //   .handler(ctx -> getBiddingOrPriceInfo(ctx, MarketEndpoint.GetBiddingInfoList))
+    //   .failureHandler(Util::handleError);
+    // api.operation("v1PostMarketBiddingList")
+    //   .handler(ctx -> getBiddingOrPriceInfo(ctx, MarketEndpoint.GetBiddingInfoList))
+    //   .failureHandler(Util::handleError);
 
     api.operation("v1MarketPriceInfo")
       .handler(ctx -> getBiddingOrPriceInfo(ctx, MarketEndpoint.GetMarketPriceInfo))
@@ -104,12 +104,12 @@ public class V1 {
       .handler(V1::getWorldMarketSubList)
       .failureHandler(Util::handleError);
 
-    api.operation("v1AliasOrders")
-      .handler(ctx -> getBiddingOrPriceInfo(ctx, MarketEndpoint.GetBiddingInfoList))
-      .failureHandler(Util::handleError);
-    api.operation("v1PostAliasOrders")
-      .handler(ctx -> getBiddingOrPriceInfo(ctx, MarketEndpoint.GetBiddingInfoList))
-      .failureHandler(Util::handleError);
+    // api.operation("v1AliasOrders")
+    //   .handler(ctx -> getBiddingOrPriceInfo(ctx, MarketEndpoint.GetBiddingInfoList))
+    //   .failureHandler(Util::handleError);
+    // api.operation("v1PostAliasOrders")
+    //   .handler(ctx -> getBiddingOrPriceInfo(ctx, MarketEndpoint.GetBiddingInfoList))
+    //   .failureHandler(Util::handleError);
 
     api.operation("v1AliasHistory")
       .handler(ctx -> getBiddingOrPriceInfo(ctx, MarketEndpoint.GetMarketPriceInfo))

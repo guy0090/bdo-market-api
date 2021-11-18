@@ -28,7 +28,7 @@ public class Scraper {
   public static Future<Void> init(Vertx vtx) {
     Promise<Void> init = Promise.promise();
     Util.read("api/key.txt").onSuccess(buffer -> {
-      apiKey = buffer.toString();
+      apiKey = buffer.toString().replaceAll(" ", "");
       vertx = vtx;
 
       if (apiKey.equals("")) {

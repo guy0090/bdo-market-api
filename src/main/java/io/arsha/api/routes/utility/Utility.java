@@ -234,7 +234,6 @@ public class Utility {
         UtilComposite key = new UtilComposite(l + collection, new JsonObject());
         dbs.put(l + collection, CacheManager.getFullDbCache().get(key));
       });
-
       CompositeFuture.all(new ArrayList(dbs.values())).onSuccess(cf -> {
         JsonObject all = new JsonObject();
         dbs.forEach((k, v) -> {

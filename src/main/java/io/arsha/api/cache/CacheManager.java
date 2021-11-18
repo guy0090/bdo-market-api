@@ -57,10 +57,13 @@ public class CacheManager {
       JsonObject regions = Marketplace.getRegions();
       regions.forEach(entry -> {
         String region = entry.getKey();
-
-        v1Cache.put(region.toLowerCase(), new Cache2kBuilder<V1Composite, Future<Buffer>>() {}
-            .name(region.toUpperCase() + "_V1").expireAfterWrite(expire, TimeUnit.MINUTES)
-            .refreshAhead(true).entryCapacity(40000).loader(Marketplace::request).build());
+        try {
+          v1Cache.put(region.toLowerCase(), new Cache2kBuilder<V1Composite, Future<Buffer>>() {}
+              .name(region.toUpperCase() + "_V1").expireAfterWrite(expire, TimeUnit.MINUTES)
+              .refreshAhead(true).entryCapacity(40000).loader(Marketplace::request).build());
+        } catch (Exception e) {
+          // System.out.println("Skipping duplicate cache creation");
+        }
       });
       cache.complete();
     });
@@ -78,7 +81,8 @@ public class CacheManager {
       regions.forEach(entry -> {
         String region = entry.getKey();
 
-        v2Cache.put(region.toLowerCase(), new Cache2kBuilder<V2Composite, Future<Buffer>>() {}
+        try {
+          v2Cache.put(region.toLowerCase(), new Cache2kBuilder<V2Composite, Future<Buffer>>() {}
             .name(region.toUpperCase() + "_V2").expireAfterWrite(expire, TimeUnit.MINUTES)
             .refreshAhead(true).entryCapacity(40000)
             .loader(key -> {
@@ -107,6 +111,9 @@ public class CacheManager {
               }
               return cached;
             }).build());
+        } catch (Exception e) {
+          // System.out.println("Skipping duplicate cache creation");
+        }
       });
       cache.complete();
     });
@@ -120,16 +127,20 @@ public class CacheManager {
   */
   public static Future<Void> createDbCache(Integer expire) {
     return Future.future(cache -> {
-      itemDBCache = new Cache2kBuilder<UtilComposite, Future<JsonObject>>() {}
-        .name("ITEM_DB").expireAfterWrite(expire, TimeUnit.MINUTES)
-        .refreshAhead(true).entryCapacity(40000)
-        .loader(key -> {
-          if (key.getCollection().contains("recipe")) {
-            return Mongo.getRecipe(key.getCollection(), key.getQuery());
-          } else {
-            return Mongo.getItem(key.getCollection(), key.getQuery());
-          }
-        }).build();
+      if (itemDBCache == null) {
+        itemDBCache = new Cache2kBuilder<UtilComposite, Future<JsonObject>>() {}
+          .name("ITEM_DB").expireAfterWrite(expire, TimeUnit.MINUTES)
+          .refreshAhead(true).entryCapacity(40000)
+          .loader(key -> {
+            if (key.getCollection().contains("recipe")) {
+              return Mongo.getRecipe(key.getCollection(), key.getQuery());
+            } else {
+              return Mongo.getItem(key.getCollection(), key.getQuery());
+            }
+          }).build();
+      } else {
+        // System.out.println("Skipping duplicate cache creation");
+      }
       cache.complete();
     });
   }
@@ -142,15 +153,19 @@ public class CacheManager {
   */
   public static Future<Void> createFullDbCache(Integer expire) {
     return Future.future(cache -> {
-      fullDBCache = new Cache2kBuilder<UtilComposite, Future<List<JsonObject>>>() {}
-        .name("FULL_ITEM_DB").expireAfterWrite(expire, TimeUnit.MINUTES).entryCapacity(20)
-        .loader(key -> {
-          if (key.getCollection().contains("recipe")) {
-            return Mongo.getRecipeClient().find(key.getCollection(), key.getQuery());
-          } else {
-            return Mongo.getItemClient().find(key.getCollection(), key.getQuery());
-          }
-        }).build();
+      if (fullDBCache == null) {
+        fullDBCache = new Cache2kBuilder<UtilComposite, Future<List<JsonObject>>>() {}
+          .name("FULL_ITEM_DB").expireAfterWrite(expire, TimeUnit.MINUTES).entryCapacity(20)
+          .loader(key -> {
+            if (key.getCollection().contains("recipe")) {
+              return Mongo.getRecipeClient().find(key.getCollection(), key.getQuery());
+            } else {
+              return Mongo.getItemClient().find(key.getCollection(), key.getQuery());
+            }
+          }).build();
+      } else {
+        // System.out.println("Skipping duplicate cache creation");
+      }
       cache.complete();
     });
   }
