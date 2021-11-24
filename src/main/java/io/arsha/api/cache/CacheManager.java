@@ -127,7 +127,7 @@ public class CacheManager {
   */
   public static Future<Void> createDbCache(Integer expire) {
     return Future.future(cache -> {
-      if (itemDBCache == null) {
+      try {
         itemDBCache = new Cache2kBuilder<UtilComposite, Future<JsonObject>>() {}
           .name("ITEM_DB").expireAfterWrite(expire, TimeUnit.MINUTES)
           .refreshAhead(true).entryCapacity(40000)
@@ -138,7 +138,7 @@ public class CacheManager {
               return Mongo.getItem(key.getCollection(), key.getQuery());
             }
           }).build();
-      } else {
+      } catch (Exception e) {
         // System.out.println("Skipping duplicate cache creation");
       }
       cache.complete();
@@ -153,7 +153,7 @@ public class CacheManager {
   */
   public static Future<Void> createFullDbCache(Integer expire) {
     return Future.future(cache -> {
-      if (fullDBCache == null) {
+      try {
         fullDBCache = new Cache2kBuilder<UtilComposite, Future<List<JsonObject>>>() {}
           .name("FULL_ITEM_DB").expireAfterWrite(expire, TimeUnit.MINUTES).entryCapacity(20)
           .loader(key -> {
@@ -163,7 +163,7 @@ public class CacheManager {
               return Mongo.getItemClient().find(key.getCollection(), key.getQuery());
             }
           }).build();
-      } else {
+      } catch (Exception e) {
         // System.out.println("Skipping duplicate cache creation");
       }
       cache.complete();

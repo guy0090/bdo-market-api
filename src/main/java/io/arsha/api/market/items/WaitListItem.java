@@ -1,6 +1,5 @@
 package io.arsha.api.market.items;
 
-import io.arsha.api.util.Util;
 import io.vertx.core.json.JsonObject;
 
 public class WaitListItem {
@@ -77,7 +76,7 @@ public class WaitListItem {
         .put("subId", sid)
         .put("price", price)
         .put("liveAt", available);
-        // .put("availableIn", Util.getAvailableTime(available));
+    //  .put("availableIn", Util.getAvailableTime(available));
     return json;
   }
 
