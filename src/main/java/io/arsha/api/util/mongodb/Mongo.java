@@ -28,17 +28,12 @@ public class Mongo {
     Promise<Void> init = Promise.promise();
     Util.read("conf/mongo.json").onSuccess(mongoConf -> {
       options = mongoConf.toJsonObject();
-      String connection = String.format(
-          options.getString("connection"),
-          options.getString("user"),
-          options.getString("pw")
-      );
 
       JsonObject itemConfig = new JsonObject()
-          .put("connection_string", connection)
+          .put("connection_string", options.getString("connection"))
           .put("db_name", "items");
       JsonObject recipeConfig = new JsonObject()
-          .put("connection_string", connection)
+          .put("connection_string", options.getString("connection"))
           .put("db_name", "recipes");
 
       try {

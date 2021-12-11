@@ -75,6 +75,10 @@ public class API extends AbstractVerticle {
       .onFailure(fail -> logger.error("Failed to deploy: " + fail.getMessage()));
   }
 
+  public static Logger getLogger() {
+    return logger;
+  }
+
   /**
    * Initialize components.
    *
