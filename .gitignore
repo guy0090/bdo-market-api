@@ -13,6 +13,7 @@
 mvnw*
 conf/auth.json
 conf/mongo.json
+conf/mongo-remote.json
 api/key.txt
 logs*
 
